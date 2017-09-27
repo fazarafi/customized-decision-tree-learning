@@ -16,3 +16,26 @@
 data/filePath.txt
 /.metadata/
 /bin/
+/build/
+
+#ant specific
+dist/
+build/
+
+#netbeans specific
+core
+nbproject/*
+
+#java specific
+*.class
+
+#general swap/backup files
+*.so
+*.log
+*.out
+*~
+*.swp
+*.DS_Store
+*.lock
+build.xml
+manifest.mf
