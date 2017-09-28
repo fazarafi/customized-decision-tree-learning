@@ -27,12 +27,17 @@ public class DTLExample {
 		DTLExample dtlModel = new DTLExample();
 		sc.close();
 		try {
-			dtlModel.setTrainingDataset(loadData("files/iris.arff","arff"));
-			dtlModel.trainModel();
-//			System.out.println(dtlModel.getMyClassifier());
-			dtlModel.filterData();
-			dtlModel.selfTesting();
-			dtlModel.saveModel();			
+			dtlModel.setTrainingDataset(loadData("files/"+filename,"arff"));
+			if (dtlModel.getTrainingDataset()!=null) {
+				dtlModel.trainModel();
+				System.out.println(dtlModel.getMyClassifier());
+				dtlModel.filterData();
+				dtlModel.selfTesting();
+				dtlModel.saveModel();	
+				dtlModel.testModel("files/"+filename);
+			} else {
+				System.out.println("file not found.");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -85,21 +90,23 @@ public class DTLExample {
 	}
 	
 	public void testModel(String filename) throws Exception {
-		DataSource source = new DataSource(filename);
-		int lastIndex = this.getTrainingDataset().classIndex();
-		int correctClass = 0;
-        
-		Instances test = source.getDataSet();
-        test.setClassIndex(lastIndex);
-        
-        for(int i=0; i<test.numInstances(); i++) {   
-            double index = this.getMyClassifier().classifyInstance(test.instance(i));
-            String className = this.getTrainingDataset().
-            		attribute(lastIndex).value((int)index);
-//            if (className.equals(test.instance(i).getClass())) 
-//            	correctClass++;
-            
-        }
+		if (isFileExist(filename) && DataSource.isArff(filename)) {
+			DataSource source = new DataSource(filename);
+			int lastIndex = this.getTrainingDataset().classIndex();
+			int correctClass = 0;
+	        
+			Instances test = source.getDataSet();
+	        test.setClassIndex(lastIndex);
+	        
+	        for(int i=0; i<test.numInstances(); i++) {   
+	            double index = this.getMyClassifier().classifyInstance(test.instance(i));
+	            String className = this.getTrainingDataset().
+	            		attribute(lastIndex).value((int)index);
+	            if (className.equals(test.instance(i).toString(lastIndex)))
+	            	correctClass++;
+	        }
+	        System.out.println("Akurasi: "+(double) correctClass/test.numInstances()*100+" %");
+		}
 	}
 	
 	public void selfTesting() throws Exception {
@@ -124,19 +131,31 @@ public class DTLExample {
 	}
 
 	public static Instances loadData(String filename, String type) throws Exception {
-		Instances dataTrain;
-		if (type.equals("csv")) {
-			CSVLoader loader = new CSVLoader();
-		    loader.setSource(new File(filename));
-		    dataTrain = loader.getDataSet();
-		} else {
-			DataSource source = new DataSource(filename);
-	        dataTrain = source.getDataSet();
+		Instances dataTrain = null;
+		
+		if (isFileExist(filename)) {
+			if (type.equals("csv")) {
+				CSVLoader loader = new CSVLoader();
+			    loader.setSource(new File(filename));
+			    dataTrain = loader.getDataSet();
+			} else {
+				if (DataSource.isArff(filename)) {
+					DataSource source = new DataSource(filename);	
+					dataTrain = source.getDataSet();
+				}
+			}
+			if (dataTrain!=null) {
+		        int lastIndex = dataTrain.numAttributes() - 1;
+		        if (dataTrain.classIndex() == -1)
+		        	dataTrain.setClassIndex(lastIndex);
+			}
 		}
-        int lastIndex = dataTrain.numAttributes() - 1;
-        if (dataTrain.classIndex() == -1)
-        	dataTrain.setClassIndex(lastIndex);
-        return dataTrain;
+	    return dataTrain;
     }
+	
+	public static boolean isFileExist(String filename) {
+		File tmpDir = new File(filename);
+		return tmpDir.exists();
+	}
 	 
 }
