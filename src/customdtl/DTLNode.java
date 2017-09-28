@@ -13,12 +13,57 @@ import weka.core.Instances;
  * @author adesu
  */
 public class DTLNode {
-    double Entropy;
-    double IG;
-    String AtrributeName;
-    String ValueTo;
-    ArrayList<Instances> Data;
-    DTLNode Parent;
-    ArrayList<DTLNode> Children;
-    ArrayList<String> PossibleAttribut;
+    
+    private double Entropy;
+    private double IG;
+    public String AtrributeName;
+    public String ValueTo;
+    public ArrayList<Instances>;
+    public DTLNode Parent;
+    public ArrayList<DTLNode> Children;
+    public ArrayList<String> PossibleAttribut;
+    
+    public DTLNode(){
+    
+    }
+    
+    public void fillArrayPossibleAttribut(){
+        
+    }
+    
+    public void calculateEntropy(){
+    
+    }
+    
+    public double getEntropy(){
+        return Entropy;
+    }
+    
+    public void calculateIG(){
+        
+    }
+    
+    public double getIG(){
+        return IG;
+    }
+    
+    public void setParent(DTLNode parent){
+    
+    }
+    
+    public void addChild(DTLNode child){
+        
+    }
+    
+    public boolean isRoot(){
+        return true;
+    }
+    
+    public boolean isLeaf(){
+        return true;
+    }
+    
+    public void removeParent(){
+    
+    }
 }
