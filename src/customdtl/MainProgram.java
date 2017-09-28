@@ -22,5 +22,10 @@ public class MainProgram {
         ID3Classifier id3 = new ID3Classifier();
         for (int i=0; i < train.numAttributes();i++)
             System.out.println(i + ". " + train.attribute(i).name());
+        System.out.print("Masukkan indeks kelas : ");
+        int classidx = scan.nextInt();
+        train.setClassIndex(classidx);
+        
+        System.out.println(id3.isAllSame(train));
     }
 }
