@@ -18,7 +18,7 @@ public class MainProgram {
         String filename = scan.next();
         
         //isi sesuai path
-        ConverterUtils.DataSource source = new ConverterUtils.DataSource(("C:\\Program Files\\Weka-3-8\\data\\" + filename));
+        ConverterUtils.DataSource source = new ConverterUtils.DataSource((filename));
         
         Instances train = source.getDataSet();
         ID3Classifier id3 = new ID3Classifier();
