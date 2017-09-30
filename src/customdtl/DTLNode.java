@@ -16,25 +16,27 @@ public class DTLNode {
     
     private double Entropy;
     private double IG;
-    public String AtrributeName;
+    public String AttributeName;
     public String ValueTo; 
 //    public ArrayList<Instances>;
     public DTLNode Parent;
     public ArrayList<DTLNode> Children;
     public ArrayList<String> PossibleAttribut;
-    private String className;
+    public String className;
+    public int classIndex;
     
     public DTLNode(){
-        className = "";
+        className = null;
+        classIndex = -1;
     }
     
-    public String getClassName(){
-        return className;
-    }
-    
-    public void setClassName(String s){
-        className = s;
-    }
+//    public String getClassName(){
+//        return className;
+//    }
+//    
+//    public void setClassName(String s){
+//        className = s;
+//    }
     
     public void fillArrayPossibleAttribut(){
         
