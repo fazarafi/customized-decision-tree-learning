@@ -1,6 +1,7 @@
 package customdtl;
 
 import weka.classifiers.AbstractClassifier;
+import java.util.ArrayList;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Attribute;
@@ -10,10 +11,7 @@ public class ID3Classifier extends AbstractClassifier{
     
     public DTLNode tree;
     
-    @Override
-    public void buildClassifier(Instances ins) throws Exception {
-//      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    // create roots
+    public DTLNode buildTree(Instances ins) {
         DTLNode node = new DTLNode();
         if (isAllSame(ins)){ // jadikan node ini sebagai node daun!!
             // BASIS
@@ -33,12 +31,23 @@ public class ID3Classifier extends AbstractClassifier{
             
             // HITUNG IG TIAP POSSIBLE ATRIBUTE
             node.calculateIg(ins);
-            Attribute bestAtt = node.possibleAttribute.get(node.getIndexBestAttribute());
+            node.attributeToCheck = node.possibleAttribute.get(node.getIndexBestAttribute());
             
             // BANGKITKAN ANAK
+            ArrayList<String> child = node.possibleAttributeValue(ins, node.attributeToCheck);
+            for (String s : child) {
+                
+            }
         }
         
-        tree = node;
+        return node;
+    }
+    
+    @Override
+    public void buildClassifier(Instances ins) throws Exception {
+//      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // create roots
+        tree = buildTree(ins);
     }
     
     @Override
