@@ -19,48 +19,95 @@ import weka.filters.unsupervised.attribute.Remove;
 public class DTLExample {
 	private Classifier myClassifier;
 	private Instances trainingDataset;
+	private static Scanner sc = new Scanner(System.in);
+	
 		
 	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
 		boolean isStopped = false;
 		while (!isStopped) {
             try {
-                    System.out.println("===========================");
-                    DTLUtil.printAllFiles();
-                    System.out.println("Nama file dataset: ");
-                    String filename = new String("breast-cancer.arff");
-                    DTLExample dtlModel = new DTLExample();
+                System.out.println("===============================");
+                
+                DTLUtil.printAllFiles();
+                System.out.println("Nama file dataset: ");
+                String filename = new String("breast-cancer.arff");
+                DTLExample dtlModel = new DTLExample();
 			
 				dtlModel.setTrainingDataset(loadData("files/"+filename));
 				if (dtlModel.getTrainingDataset()!=null) {
-				System.out.println("Indeks kelas di akhir? y/n");
-				String str = new String("y");
-				int classIndex = 0;
-				if (str.equals("y")) {
-					classIndex = dtlModel.getTrainingDataset().numAttributes() - 1;
-				} else {
-					System.out.print("Jadi di indeks ke? ");
-					classIndex = 0;
-				}
-				if (dtlModel.getTrainingDataset().classIndex() == -1)
-		        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
-                    System.out.println("=========================== TRAINING STARTED");
-					dtlModel.trainModel();
-					System.out.println(dtlModel.getMyClassifier());
-					System.out.println("=========================== TRAINING FINISHED");
+					System.out.println("Indeks kelas di akhir? y/n");
+					String str = new String("y");
+					int classIndex = 0;
 					
-//					dtlModel.filterData();
-					dtlModel.selfTesting();
-					dtlModel.saveModel();	
+					if (str.equals("y")) {
+						classIndex = dtlModel.getTrainingDataset().numAttributes() - 1;
+					} else {
+						System.out.print("Jadi di indeks ke? ");
+						classIndex = 0;
+					}
+					if (dtlModel.getTrainingDataset().classIndex() == -1) {
+			        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
+					}
+					
+					System.out.println("Remove missing attributes? (y/n)");
+					str = sc.next();
+					if (str.equals("y")) {
+//						dtlModel.removeAttribute(attributeId);
+						System.out.println("Dataset di-filter!");
+					} else {
+						System.out.println("Dataset tidak di-filter!");
+					}
+					
+					System.out.println("Load Model baru? (y/n)");
+					str = sc.next();
+					if (str.equals("y")) {
+						dtlModel.loadModel();
+						System.out.println("Model berhasil di-load!");
+					} else {
+						System.out.println("=========================== TRAINING STARTED");
+						dtlModel.trainModel();
+//						System.out.println(dtlModel.getMyClassifier());
+						System.out.println("=========================== TRAINING FINISHED");
+						System.out.println("Dataset tidak di-filter!");
+					}
+					
+	                System.out.println("Filter dataset dengan Resample? (y/n)");
+	                str = sc.next();
+					if (str.equals("y")) {
+						dtlModel.filterData();
+						System.out.println("Dataset di-filter!");
+					} else {
+						System.out.println("Dataset tidak di-filter!");
+					}
+					
+					System.out.println("Tes model dengan 10-fold Cross Validation? (y/n)");
+					str = sc.next();
+					if (str.equals("y")) {
+						dtlModel.crossValTesting();
+					}
+					
+					System.out.println("Tes model dengan train-test Percentage? (y/n)");
+					str = sc.next();
+					if (str.equals("y")) {
+						System.out.println("Berapa persen? (y/n)");
+						int trainPerc = sc.nextInt();
+						dtlModel.percSplitTesting(trainPerc);
+					}
+					
+					System.out.println("Save Model? (y/n)");
+					str = sc.next();
+					if (str.equals("y")) {
+						dtlModel.saveModel();
+					}
 //					dtlModel.testModel("files/"+filename);
-//                                        System.out.println(dtlModel.getTrainingDataset().toString());
+//              	System.out.println(dtlModel.getTrainingDataset().toString());
 				} else {
 					System.out.println("file not found.");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-                isStopped = true;
+            isStopped = true;
 		}
 		sc.close();
 		
@@ -115,28 +162,47 @@ public class DTLExample {
 	public void testModel(String filename) throws Exception {
 		if (DTLUtil.isFileExist(filename) && DataSource.isArff(filename)) {
 			DataSource source = new DataSource(filename);
-			int lastIndex = this.getTrainingDataset().classIndex();
+			int classIdx = this.getTrainingDataset().classIndex();
 			int correctClass = 0;
-	        
 			Instances test = source.getDataSet();
-	        test.setClassIndex(lastIndex);
+	        test.setClassIndex(classIdx);
 	        
 	        for(int i=0; i<test.numInstances(); i++) {   
 	            double index = this.getMyClassifier().classifyInstance(test.instance(i));
 	            String className = this.getTrainingDataset().
-	            		attribute(lastIndex).value((int)index);
-	            if (className.equals(test.instance(i).toString(lastIndex)))
+	            		attribute(classIdx).value((int)index);
+	            if (className.equals(test.instance(i).toString(classIdx)))
 	            	correctClass++;
 	        }
 	        System.out.println("Akurasi: "+(double) correctClass/test.numInstances()*100+" %");
 		}
 	}
 	
-	public void selfTesting() throws Exception {
+	public void crossValTesting() throws Exception {
 		Evaluation evalResult = new Evaluation(this.getTrainingDataset());
 		// Ten-Fold Cross Validation
 		evalResult.crossValidateModel(this.getMyClassifier(), this.getTrainingDataset(), 2, new Random(1));
 		System.out.println(evalResult.toSummaryString());
+	}
+	
+	public void percSplitTesting(int trainPerc) throws Exception {
+		Instances[] splittedInst =  DTLUtil.splitInstances(
+				(trainPerc/100)*trainingDataset.numInstances(), trainingDataset);
+		// Training data
+		Classifier cls = new ID3Classifier();
+		cls.buildClassifier(splittedInst[0]);
+		
+		// Testing 
+		int classIdx = splittedInst[0].classIndex();
+		int correctClass = 0;
+		for(int i=0; i<splittedInst[1].numInstances(); i++) {   
+            double index = this.getMyClassifier().classifyInstance(splittedInst[1].instance(i));
+            String className = this.getTrainingDataset().
+            		attribute(classIdx).value((int)index);
+            if (className.equals(splittedInst[1].instance(i).toString(classIdx)))
+            	correctClass++;
+        }
+        System.out.println("Akurasi: "+(double) correctClass/splittedInst[1].numInstances()*100+" %");
 	}
 	
 	public double classifyInputData(Instance input) throws Exception {
