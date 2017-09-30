@@ -28,13 +28,13 @@ public class DTLExample {
                     System.out.println("===========================");
                     DTLUtil.printAllFiles();
                     System.out.println("Nama file dataset: ");
-                    String filename = new String("mushrooms.csv");
+                    String filename = new String("breast-cancer.arff");
                     DTLExample dtlModel = new DTLExample();
 			
 				dtlModel.setTrainingDataset(loadData("files/"+filename));
 				if (dtlModel.getTrainingDataset()!=null) {
 				System.out.println("Indeks kelas di akhir? y/n");
-				String str = new String("n");
+				String str = new String("y");
 				int classIndex = 0;
 				if (str.equals("y")) {
 					classIndex = dtlModel.getTrainingDataset().numAttributes() - 1;
@@ -50,7 +50,7 @@ public class DTLExample {
 					System.out.println("=========================== TRAINING FINISHED");
 					
 //					dtlModel.filterData();
-					dtlModel.selfTesting();
+//					dtlModel.selfTesting();
 					dtlModel.saveModel();	
 //					dtlModel.testModel("files/"+filename);
 //                                        System.out.println(dtlModel.getTrainingDataset().toString());
@@ -87,7 +87,7 @@ public class DTLExample {
 	}
 	
 	public void trainModel() throws Exception {
-		Classifier DTL = new J48();
+		ID3Classifier DTL = new ID3Classifier();
 		DTL.buildClassifier(this.getTrainingDataset());
 		this.setMyClassifier(DTL);
 	}

@@ -18,6 +18,7 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
                 // BASIS
                 node.className = ins.get(0).toString(ins.classIndex());
                 node.classIndex = (int) ins.get(0).classValue();
+//                System.out.println("leaf");
             } else {
                 // REKURENS
 
@@ -39,6 +40,7 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
                 ArrayList<String> childString = node.attributeValues;
                 for (String s : childString) {
                     Instances subsetIns = DTLUtil.filterInstances(ins, node.attributeToCheck, s);
+                    System.out.println("ins = "+ins.numInstances()+", sub = "+subsetIns.numInstances());
                     DTLNode childNode = buildTree(subsetIns, node);
                     node.children.add(childNode);
                 }
@@ -62,14 +64,20 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
         try {
             //missing attribute
             if (node.isLeaf()) {
+                System.out.println("leaf");
                 // BASIS
                 return node.classIndex; // basis
             } else { // bukan daun
                 // REKURENS
                 Attribute a = node.attributeToCheck;
+                System.out.println(a);
                 String val = ins.stringValue(a);
+                System.out.println(val);
+                System.out.println(node.attributeValues);
                 int index = node.attributeValues.indexOf(val);
+                System.out.println(index);
                 DTLNode child = node.children.get(index);
+                System.out.println("check");
                 return getClassIndex(ins, child);
             }
         } catch (Exception e) {

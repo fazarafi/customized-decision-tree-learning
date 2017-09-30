@@ -38,10 +38,10 @@ public class DTLNode implements Serializable{
         // entropy tidak perlu diinisialisasi
         parent = newParent;
         attributeToCheck = null;
-        possibleAttribute = new ArrayList<>();
-        ig = new ArrayList<>();
-        children = new ArrayList<>();
-        // attributeValues di bangkitkan saat pemanggilan fungsi
+        possibleAttribute = new ArrayList<Attribute>();
+        ig = new ArrayList<Double>();
+        children = new ArrayList<DTLNode>();
+        attributeValues = new ArrayList<String>();
     }
         
     public boolean isRoot() throws Exception {
@@ -98,7 +98,7 @@ public class DTLNode implements Serializable{
     // isi array of information gain
     public void calculateIg(Instances ins) throws Exception {
         for (Attribute att : possibleAttribute) {
-            ig.add(DTLUtil.calculateIgF(ins, att));
+            ig.add(new Double(DTLUtil.calculateIgF(ins, att)));
         }
     }
     
@@ -114,6 +114,9 @@ public class DTLNode implements Serializable{
     }
     
     public void saveAttributeValues(Instances ins) throws Exception {
-        attributeValues = DTLUtil.possibleAttributeValue(ins, attributeToCheck);
+        for (int i=0;i<attributeToCheck.numValues();i++) {
+            attributeValues.add(new String(attributeToCheck.value(i)));
+        }
+        System.out.println("aV = "+attributeValues);
     }
 }
