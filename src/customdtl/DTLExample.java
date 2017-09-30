@@ -199,7 +199,7 @@ public class DTLExample {
 	public void crossValTesting() throws Exception {
 		Evaluation evalResult = new Evaluation(this.getTrainingDataset());
 		// Ten-Fold Cross Validation
-		evalResult.crossValidateModel(this.getMyClassifier(), this.getTrainingDataset(), 2, new Random(1));
+		evalResult.crossValidateModel(this.getMyClassifier(), this.getTrainingDataset(), 10, new Random(1));
 		System.out.println(evalResult.toSummaryString());
 	}
 	
