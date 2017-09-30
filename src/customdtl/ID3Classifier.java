@@ -13,24 +13,25 @@ public class ID3Classifier extends AbstractClassifier{
     public void buildClassifier(Instances ins) throws Exception {
 //      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     // create roots
-        DTLNode rootNode = new DTLNode();
+        DTLNode node = new DTLNode();
         if (isAllSame(ins)){ // jadikan node ini sebagai node daun!!
             // BASIS
-            rootNode.className = ins.get(0).toString(ins.classIndex());
-            rootNode.classIndex = ins.classIndex();
+            node.className = ins.get(0).toString(ins.classIndex());
+            node.classIndex = ins.classIndex();
         } else {
             // REKURENS
             // rootNode.className = null; (ada di konstruktor)
             // rootNode.classIndex = -1; (ada di konstruktor)
             
             // HITUNG ENTROPY
-            rootNode.getClassesData(ins);
-            rootNode.calculateEntropy(ins);
+            node.getClassesData(ins);
+            node.calculateEntropy(ins);
             
             // DAPATKAN ATRIBUT YANG MASIH MUNGKIN
-            rootNode.fillArrayPossibleAttribut(ins);
+            node.fillArrayPossibleAttribut(ins);
             
             // HITUNG IG TIAP POSSIBLE ATRIBUTE
+            node.calculateIg(ins);
             
             // BANGKITKAN ANAK
         }

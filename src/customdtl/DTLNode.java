@@ -150,7 +150,7 @@ public class DTLNode {
     }
     
     // hitung information gain
-    public double calculateIg(Instances ins, Attribute att) {
+    public double calculateIgF(Instances ins, Attribute att) {
         double entAll = calculateEntropyF(ins);
         double infGain = entAll;
         ArrayList<String> arr_val = possibleAttributeValue(ins, att);
@@ -165,9 +165,11 @@ public class DTLNode {
     }
 
     
-//    public void calculateIG(){
-//        
-//    }
+    public void calculateIg(Instances ins){
+        for (Attribute att : possibleAttribute) {
+            ig.add(calculateIgF(ins, att));
+        }
+    }
     
     // menyimpan parent dari node tersebut
     // (Root/akar tidak akan memanggil prosedur ini)
