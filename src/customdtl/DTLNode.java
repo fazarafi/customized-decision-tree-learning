@@ -76,8 +76,20 @@ public class DTLNode {
         classes = getClassesDataF(ins);
     }
     
-    // fungsi bantuan untuk prosedur di bawahnya
+    // 2 fungsi bantuan untuk prosedur di bawahnya (1/2)
     public double calculateEntropyF(Instances ins, int[] arr_class) {
+        double ent = 0; // entropy
+        for (int i = 0; i < arr_class.length; i++) {
+            double prob = (double) arr_class[i] / (double) ins.numInstances();
+            ent += prob * Math.log(prob);
+        }
+        ent *= -1 / Math.log(2d);
+        
+        return ent;
+    }
+    // 2 fungsi bantuan untuk prosedur di bawahnya (2/2)
+    public double calculateEntropyF(Instances ins) {
+        int[] arr_class = getClassesDataF(ins);
         double ent = 0; // entropy
         for (int i = 0; i < arr_class.length; i++) {
             double prob = (double) arr_class[i] / (double) ins.numInstances();
@@ -112,17 +124,44 @@ public class DTLNode {
         }
     }
     
-    public Instances filterInstances(Instances ins, int indexAtt, String value) {
+    public Instances filterInstances(Instances ins, Attribute att, String value) {
         Instances newIns = new Instances(ins);
         
         for (int i = newIns.numInstances() - 1; i >= 0; i--) {
             Instance singleIns = newIns.get(i);
-            if (!singleIns.stringValue(indexAtt).equals(value)) {
+            if (!singleIns.stringValue(att).equals(value)) {
                 newIns.delete(i);
             }
         }
         
         return newIns;
+    }
+    
+    // cari possible value dari atribute
+    public ArrayList<String> possibleAttributeValue(Instances ins, Attribute att) {
+        ArrayList<String> arr_val = new ArrayList<>();
+        
+        for (Instance singleIns : ins) {
+            if (!arr_val.contains(singleIns.stringValue(att)))
+                arr_val.add(singleIns.stringValue(att));
+        }
+        
+        return arr_val;
+    }
+    
+    // hitung information gain
+    public double calculateIg(Instances ins, Attribute att) {
+        double entAll = calculateEntropyF(ins);
+        double infGain = entAll;
+        ArrayList<String> arr_val = possibleAttributeValue(ins, att);
+        
+        for (String s : arr_val) {
+            Instances subsetIns = filterInstances(ins, att, s);
+            double entSubsetIns = calculateEntropyF(subsetIns);
+            infGain -= (subsetIns.numInstances()/ins.numInstances())*entSubsetIns;
+        }
+        
+        return infGain;
     }
 
     
