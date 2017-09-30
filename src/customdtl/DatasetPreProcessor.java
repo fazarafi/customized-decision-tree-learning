@@ -83,18 +83,18 @@ public class DatasetPreProcessor {
 			}
 		}
 		
-		System.out.println("atribut");
-		for (int i=0; i<numInstances; i++) {
-			System.out.print(i+">"+valueArray[i]+" ");	
-		}
-		
-		System.out.println("");
-		System.out.println("class");
-		for (int i=0; i<numInstances; i++) {
-			System.out.print(i+">"+classArray[i]+" ");	
-		}
-		System.out.println("");
-		System.out.println(cutPointList);
+//		System.out.println("atribut");
+//		for (int i=0; i<numInstances; i++) {
+//			System.out.print(i+">"+valueArray[i]+" ");	
+//		}
+//		
+//		System.out.println("");
+//		System.out.println("class");
+//		for (int i=0; i<numInstances; i++) {
+//			System.out.print(i+">"+classArray[i]+" ");	
+//		}
+//		System.out.println("");
+//		System.out.println(cutPointList);
 		
 		int chosenCutPoint = 0;
 		double maxIG = 0d;
@@ -104,9 +104,8 @@ public class DatasetPreProcessor {
         
 		while (counter<10 && !cutPointList.isEmpty()) {
 			int index = randomizer.nextInt(cutPointList.size());
-			System.out.println(cutPointList.get(index));
 			double cutPointIG = calculateIG(cutPointList.get(index),sortedInst);
-//			System.out.println(cutPoint+". "+cutPointIG);
+//			System.out.println(cutPointList.get(index)+". "+cutPointIG);
 			if (cutPointIG > maxIG) {
 				maxIG = cutPointIG;
 				chosenCutPoint = cutPointList.get(index); 
@@ -123,10 +122,8 @@ public class DatasetPreProcessor {
 		double ig = entAll;
 		Instances[] splittedInst = splitInstances(cutPoint,sortedInst);
 		for (int i=0; i<2; i++) {
-			Attribute classAtt = splittedInst[i].attribute(splittedInst[i].classIndex());
-			ArrayList<String> arr_val = DTLUtil.possibleAttributeValue(splittedInst[i], classAtt);			
-			double entSubsetIns = DTLUtil.calculateEntropyForContF(splittedInst[i],arr_val);
-			ig -= (splittedInst[i].numInstances() / sortedInst.numInstances()) * entSubsetIns;	
+			double entSubsetIns = DTLUtil.calculateEntropyF(splittedInst[i]);
+			ig -= ((double) splittedInst[i].numInstances() / (double)sortedInst.numInstances()) * entSubsetIns;	
 		}
 		return ig;
 	}

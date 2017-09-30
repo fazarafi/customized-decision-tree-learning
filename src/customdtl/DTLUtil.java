@@ -48,13 +48,12 @@ public class DTLUtil {
 	// 2 fungsi bantuan untuk prosedur di bawahnya (2/2)
 	public static double calculateEntropyF(Instances ins) {
 		int[] arr_class = getClassesDataF(ins);
-                
-		double ent = 0; // entropy
+        double ent = 0; // entropy
 		for (int i = 0; i < arr_class.length; i++) {
-                        if (arr_class[i] != 0) {
-                            double prob = (double) arr_class[i] / (double) ins.numInstances();
-                            ent += prob * Math.log(prob);
-                        }
+            if (arr_class[i] != 0) {
+                double prob = (double) arr_class[i] / (double) ins.numInstances();
+                ent += prob * Math.log(prob);
+            }
 		}
 		ent *= (double) -1 / Math.log(2d);
                 
