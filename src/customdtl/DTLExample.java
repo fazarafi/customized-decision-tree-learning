@@ -24,12 +24,12 @@ public class DTLExample {
 		Scanner sc = new Scanner(System.in);
 		boolean isStopped = false;
 		while (!isStopped) {
-                        try {
-                                System.out.println("===========================");
-                                DTLUtil.printAllFiles();
-                                System.out.println("Nama file dataset: ");
-                                String filename = new String("mushrooms.csv");
-                                DTLExample dtlModel = new DTLExample();
+            try {
+                    System.out.println("===========================");
+                    DTLUtil.printAllFiles();
+                    System.out.println("Nama file dataset: ");
+                    String filename = new String("iris.arff");
+                    DTLExample dtlModel = new DTLExample();
 			
 				dtlModel.setTrainingDataset(loadData("files/"+filename));
 				if (dtlModel.getTrainingDataset()!=null) {
@@ -87,7 +87,7 @@ public class DTLExample {
 	}
 	
 	public void trainModel() throws Exception {
-		ID3Classifier DTL = new ID3Classifier();
+		Classifier DTL = new J48();
 		DTL.buildClassifier(this.getTrainingDataset());
 		this.setMyClassifier(DTL);
 	}
@@ -135,7 +135,7 @@ public class DTLExample {
 	public void selfTesting() throws Exception {
 		Evaluation evalResult = new Evaluation(this.getTrainingDataset());
 		// Ten-Fold Cross Validation
-		evalResult.crossValidateModel(this.getMyClassifier(), this.getTrainingDataset(), 10, new Random(1));
+		evalResult.crossValidateModel(this.getMyClassifier(), this.getTrainingDataset(), 2, new Random(1));
 		System.out.println(evalResult.toSummaryString());
 	}
 	
@@ -152,6 +152,15 @@ public class DTLExample {
 		Classifier cls = (Classifier) SerializationHelper.read("model/J48.model");
 		this.setMyClassifier(cls);
 	}
+	
+	public static void handleMissingAttribute(Instances data) {
+		System.out.println("sblm "+data.numInstances());
+		int numAttributes = data.numAttributes();
+		for (int i=0; i<numAttributes; i++) {
+			data.deleteWithMissing(i);
+		}
+		System.out.println("stlh "+data.numInstances());
+	}
 
 	public static Instances loadData(String filename) throws Exception {
 		Instances dataTrain = null;
@@ -166,7 +175,9 @@ public class DTLExample {
 					DataSource source = new DataSource(filename);	
 					dataTrain = source.getDataSet();
 				}
-			}			
+			}
+			
+			handleMissingAttribute(dataTrain);
 		}
 		
 	    return dataTrain;
