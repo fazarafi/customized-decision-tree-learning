@@ -16,17 +16,23 @@ import weka.core.Attribute;
  */
 public class DTLNode {
     
-    public double entropy; // entropy dari data 
-    public double ig;
-    public Attribute attributeToCheck; // atribute yang di check di node itu
-//    public String valueTo; 
-//    public Instances data;
-    public DTLNode parent;
-//    public ArrayList<DTLNode> children;
-    public ArrayList<Attribute> possibleAttribute; // atribute yang masih tersisa
-    public int classes[];
     public String className; // nama kelas apabila node adalah daun
     public int classIndex; // index kelas apabila node adalah daun
+    
+    public int classes[];
+    public double entropy; // entropy dari data     
+    
+    public DTLNode parent; // parent dari node ini (untuk akar, parent == null)
+    public Attribute attributeToCheck; // atribute yang di check di node itu
+    public ArrayList<Attribute> possibleAttribute; // atribute yang masih tersisa
+    
+    public ArrayList<Double> ig; // ig dari atribute yang mungkin, indeks sama dengan indeks possible atribute
+//    public String valueTo; 
+//    public Instances data;
+//    public ArrayList<DTLNode> children;
+    
+    
+    
     
     public DTLNode(){
         className = null;
@@ -81,29 +87,34 @@ public class DTLNode {
         entropy *= -1 / Math.log(2d);
     }
     
-    public void calculateIG(){
-        
-    }
+//    public void calculateIG(){
+//        
+//    }
     
+    // menyimpan parent dari node tersebut
+    // (Root/akar tidak akan memanggil prosedur ini)
     public void setParent(DTLNode parent){
         
     }
     
+    // bangkitkan anak dari node
+    // don't forget to set parent in the end!!!!
     public void addChild(DTLNode child){
         
     }
     
     public boolean isRoot(){
-        return true;
+        return parent == null;
     }
     
     public boolean isLeaf(){
-        return true;
+//        return !(className.isEmpty());
+        return classIndex == -1;
     }
     
-    public void removeParent(){
-        
-    }
+//    public void removeParent(){
+//        
+//    }
     
     // count the number of instance that has class index i
     public int count(Instances ins, int i) {

@@ -15,9 +15,11 @@ public class ID3Classifier extends AbstractClassifier{
     // create roots
         DTLNode rootNode = new DTLNode();
         if (isAllSame(ins)){ // jadikan node ini sebagai node daun!!
+            // BASIS
             rootNode.className = ins.get(0).toString(ins.classIndex());
             rootNode.classIndex = ins.classIndex();
         } else {
+            // REKURENS
             // rootNode.className = null; (ada di konstruktor)
             // rootNode.classIndex = -1; (ada di konstruktor)
             
@@ -27,6 +29,10 @@ public class ID3Classifier extends AbstractClassifier{
             
             // DAPATKAN ATRIBUT YANG MASIH MUNGKIN
             rootNode.fillArrayPossibleAttribut(ins);
+            
+            // HITUNG IG TIAP POSSIBLE ATRIBUTE
+            
+            // BANGKITKAN ANAK
         }
         
         tree = rootNode;
@@ -35,7 +41,7 @@ public class ID3Classifier extends AbstractClassifier{
     @Override
     public double classifyInstance(Instance ins) {
         //missing attribute
-        if (!tree.className.isEmpty()) {
+        if (tree.isLeaf()) {
             return (double) tree.classIndex; // basis
         } else {
             //rekurens
