@@ -33,6 +33,7 @@ public class ID3Classifier extends AbstractClassifier{
             // HITUNG IG TIAP POSSIBLE ATRIBUTE
             node.calculateIg(ins);
             node.attributeToCheck = node.possibleAttribute.get(node.getIndexBestAttribute());
+            node.saveAttributeValues(ins);
             
             // BANGKITKAN ANAK
             ArrayList<String> childString = node.possibleAttributeValue(ins, node.attributeToCheck);
@@ -50,27 +51,33 @@ public class ID3Classifier extends AbstractClassifier{
     @Override
     public void buildClassifier(Instances ins) throws Exception {
 //      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        // create roots
+        // create tree (root)
         tree = buildTree(ins);
+    }
+    
+    public static int getClassIndex(Instance ins, DTLNode node) {
+        //missing attribute
+        if (node.isLeaf()) {
+            // BASIS
+            return node.classIndex; // basis
+        } else { // bukan daun
+            // REKURENS
+            String val = ins.stringValue(node.attributeToCheck);
+            int index = node.attributeValues.indexOf(val);
+            DTLNode child = node.children.get(index);
+            return getClassIndex(ins, child);
+        }
     }
     
     @Override
     public double classifyInstance(Instance ins) {
-        //missing attribute
-        if (tree.isLeaf()) {
-            return (double) tree.classIndex; // basis
-        } else {
-            //rekurens
-            return 0d;
-        }        
+        return (double) getClassIndex(ins, tree);
     }
     
     public boolean isAllSame(Instances ins){
         Instance firstIns = ins.firstInstance();
         for(int i = 1; i<ins.numInstances();i++) {
-//            System.out.println("beforeif");
             if (!ins.get(i).toString(ins.classIndex()).equals(firstIns.toString(ins.classIndex())) ){
-//                System.out.println("before false");
                 return false;
             } 
         }
