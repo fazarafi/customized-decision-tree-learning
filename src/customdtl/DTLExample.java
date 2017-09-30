@@ -90,8 +90,6 @@ public class DTLExample {
 		ID3Classifier DTL = new ID3Classifier();
 		DTL.buildClassifier(this.getTrainingDataset());
 		this.setMyClassifier(DTL);
-//                System.out.println(DTL.tree.attributeToCheck.toString());
-//                System.out.println(DTL.tree.attributeValues.toString());
 	}
 	
 	public void filterData() throws Exception {
