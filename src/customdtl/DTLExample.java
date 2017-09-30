@@ -49,13 +49,12 @@ public class DTLExample {
 			        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
 					}
 					
-					System.out.println("Remove missing attributes? (y/n)");
+					System.out.println("Remove attributes? (y/n)");
 					str = sc.next();
 					if (str.equals("y")) {
-//						dtlModel.removeAttribute(attributeId);
-						System.out.println("Dataset di-filter!");
-					} else {
-						System.out.println("Dataset tidak di-filter!");
+						System.out.print("Indeks Atribut ke? ");
+						String attId = sc.next();
+						dtlModel.removeAttribute(attId);
 					}
 					
 					System.out.println("Load Model baru? (y/n)");
@@ -66,9 +65,7 @@ public class DTLExample {
 					} else {
 						System.out.println("=========================== TRAINING STARTED");
 						dtlModel.trainModel();
-//						System.out.println(dtlModel.getMyClassifier());
 						System.out.println("=========================== TRAINING FINISHED");
-						System.out.println("Dataset tidak di-filter!");
 					}
 					
 	                System.out.println("Filter dataset dengan Resample? (y/n)");
