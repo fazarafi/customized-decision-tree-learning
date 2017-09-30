@@ -164,11 +164,22 @@ public class DTLNode {
         return infGain;
     }
 
-    
+    // isi array of information gain
     public void calculateIg(Instances ins){
         for (Attribute att : possibleAttribute) {
             ig.add(calculateIgF(ins, att));
         }
+    }
+    
+    // cari index attribute dengan ig max
+    public int getIndexBestAttribute() {
+        int index = 0;
+        for (int i=0;i<ig.size();i++) {
+            if (ig.get(i) > ig.get(index))
+                index = i;
+        }
+        
+        return index;
     }
     
     // menyimpan parent dari node tersebut

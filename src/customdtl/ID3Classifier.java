@@ -3,6 +3,7 @@ package customdtl;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Attribute;
 import java.lang.*;
 
 public class ID3Classifier extends AbstractClassifier{
@@ -32,11 +33,12 @@ public class ID3Classifier extends AbstractClassifier{
             
             // HITUNG IG TIAP POSSIBLE ATRIBUTE
             node.calculateIg(ins);
+            Attribute bestAtt = node.possibleAttribute.get(node.getIndexBestAttribute());
             
             // BANGKITKAN ANAK
         }
         
-        tree = rootNode;
+        tree = node;
     }
     
     @Override
