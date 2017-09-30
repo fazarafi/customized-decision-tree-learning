@@ -33,6 +33,7 @@ public class C45Classifier extends ID3Classifier {
                     int index = node.attributeValues.indexOf(val);
                     // if not found (attribute doesn't exist in data train)
                     if (index == -1) {
+                        System.out.println("oioi");
                         // let's just use most common value
                         int[] arr_class = DTLUtil.getClassesDataF(allIns);
                         //find max

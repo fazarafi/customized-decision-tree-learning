@@ -30,7 +30,7 @@ public class DTLExample {
                 
                 DTLUtil.printAllFiles();
                 System.out.println("Nama file dataset: ");
-                String filename = new String("mushrooms.csv");
+                String filename = new String("mushroomsDYAS.csv");
                 DTLExample dtlModel = new DTLExample();
 			
 				dtlModel.setTrainingDataset(loadData("files/"+filename));
@@ -131,7 +131,7 @@ public class DTLExample {
 	}
 	
 	public void trainModel() throws Exception {
-		ID3Classifier DTL = new ID3Classifier();
+		C45Classifier DTL = new C45Classifier();
 		DTL.buildClassifier(this.getTrainingDataset());
 		this.setMyClassifier(DTL);
 	}
