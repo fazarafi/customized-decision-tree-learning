@@ -53,7 +53,7 @@ public class DTLExample {
 					dtlModel.selfTesting();
 					dtlModel.saveModel();	
 //					dtlModel.testModel("files/"+filename);
-                                        System.out.println(dtlModel.getTrainingDataset().toString());
+//                                        System.out.println(dtlModel.getTrainingDataset().toString());
 				} else {
 					System.out.println("file not found.");
 				}

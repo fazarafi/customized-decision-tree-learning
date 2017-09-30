@@ -11,9 +11,9 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
     
     public DTLNode tree;
     
-    public DTLNode buildTree(Instances ins, ArrayList<Attribute> parentPossibleAttribute, Attribute parentAttributeToCheck) {
+    public DTLNode buildTree(Instances ins, DTLNode newParent) {
         try {
-            DTLNode node = new DTLNode();
+            DTLNode node = new DTLNode(newParent);
             if (isAllSame(ins)) { // jadikan node ini sebagai node daun!!
                 // BASIS
                 node.className = ins.get(0).toString(ins.classIndex());
@@ -28,7 +28,7 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
                 node.calculateEntropy(ins);
 
                 // DAPATKAN ATRIBUT YANG MASIH MUNGKIN
-                node.fillArrayPossibleAttribut(ins, parentPossibleAttribute, parentAttributeToCheck);
+                node.fillArrayPossibleAttribut(ins);
                 System.out.println(node.possibleAttribute);
                 
                 // HITUNG IG TIAP POSSIBLE ATRIBUTE
@@ -42,7 +42,7 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
                 for (String s : childString) {
                     Instances subsetIns = DTLUtil.filterInstances(ins, node.attributeToCheck, s);
                     System.out.println("ins = "+ins.numInstances()+", subsetIns = "+subsetIns.numInstances());
-                    DTLNode childNode = buildTree(subsetIns);
+                    DTLNode childNode = buildTree(subsetIns, node);
                     node.children.add(childNode);
                 }
             }
@@ -58,7 +58,7 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
     public void buildClassifier(Instances ins) throws Exception {
 //      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         // create tree (root)
-        tree = buildTree(ins);
+        tree = buildTree(ins, null);
     }
     
     public static int getClassIndex(Instance ins, DTLNode node) {

@@ -22,7 +22,7 @@ public class DTLNode implements Serializable{
     public int[] classes; // data kelas dan jumlahnya (untuk kalkulasi entropy)
     public double entropy; // entropy dari data     
     
-//    public DTLNode parent; // parent dari node ini (untuk akar, parent == null)
+    public DTLNode parent; // parent dari node ini (untuk akar, parent == null)
     public Attribute attributeToCheck; // atribute yang di check di node itu
     public ArrayList<Attribute> possibleAttribute; // atribute yang masih tersisa
     
@@ -31,12 +31,12 @@ public class DTLNode implements Serializable{
     
     public ArrayList<String> attributeValues; // value yang mungkin dari attribute
     
-    public DTLNode() throws Exception {
+    public DTLNode(DTLNode newParent) throws Exception {
         className = null;
         classIndex = -1;
         // classes di bangkitkan saat pemanggilan fungsi
         // entropy tidak perlu diinisialisasi
-//        parent = null;
+        parent = newParent;
         attributeToCheck = null;
         possibleAttribute = new ArrayList<>();
         ig = new ArrayList<>();
@@ -44,9 +44,9 @@ public class DTLNode implements Serializable{
         // attributeValues di bangkitkan saat pemanggilan fungsi
     }
         
-//    public boolean isRoot() throws Exception {
-//        return parent == null;
-//    }
+    public boolean isRoot() throws Exception {
+        return parent == null;
+    }
     
     public boolean isLeaf() throws Exception {
         // return !(className.isEmpty());
@@ -76,8 +76,8 @@ public class DTLNode implements Serializable{
     }
     
     // dapatkan list atribute yang mungkin
-    public void fillArrayPossibleAttribut(Instances ins, ArrayList<Attribute> parentPossibleAttribute, Attribute parentAttributeToCheck) throws Exception {
-        if (parentPossibleAttribute == null) {
+    public void fillArrayPossibleAttribut(Instances ins) throws Exception {
+        if (parent == null) {
             System.out.println("root");
             int jmlAtr = ins.numAttributes();
             for (int i = 0; i < jmlAtr; i++) {
@@ -86,12 +86,12 @@ public class DTLNode implements Serializable{
                     possibleAttribute.add(ins.attribute(i));
             }
         } else { // ada parentnya
-            System.out.println("leaf");
-            int jmlAtr = parentPossibleAttribute.size();
+            System.out.println("not root");
+            int jmlAtr = parent.possibleAttribute.size();
             for (int i = 0; i < jmlAtr; i++) {
                 // masukin possible atribute parent, KECUALI atribute parentnya itu sndiri
-                if (!parentPossibleAttribute.get(i).equals(parentAttributeToCheck)) {
-                    possibleAttribute.add(parentPossibleAttribute.get(i));
+                if (!parent.possibleAttribute.get(i).equals(parent.attributeToCheck)) {
+                    possibleAttribute.add(parent.possibleAttribute.get(i));
                 }
             }
         }
