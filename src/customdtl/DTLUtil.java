@@ -30,7 +30,7 @@ public class DTLUtil {
 	public static int count(Instances ins, int i) {
 		int total = 0;
 		for (Instance singleIns : ins) {
-			if (singleIns.classIndex() == i)
+			if ((int) singleIns.classValue() == i)
 				total += 1;
 		}
 		return total;
@@ -42,20 +42,22 @@ public class DTLUtil {
 		for (int i = 0; i < arr_class.length; i++) {
 			arr_class[i] = count(ins, i);
 		}
-
 		return arr_class;
 	}
 
 	// 2 fungsi bantuan untuk prosedur di bawahnya (2/2)
 	public static double calculateEntropyF(Instances ins) {
 		int[] arr_class = getClassesDataF(ins);
+                
 		double ent = 0; // entropy
 		for (int i = 0; i < arr_class.length; i++) {
-			double prob = (double) arr_class[i] / (double) ins.numInstances();
-			ent += prob * Math.log(prob);
+                        if (arr_class[i] != 0) {
+                            double prob = (double) arr_class[i] / (double) ins.numInstances();
+                            ent += prob * Math.log(prob);
+                        }
 		}
-		ent *= -1 / Math.log(2d);
-
+		ent *= (double) -1 / Math.log(2d);
+                
 		return ent;
 	}
 
@@ -66,7 +68,7 @@ public class DTLUtil {
 			double prob = (double) arr_class[i] / (double) ins.numInstances();
 			ent += prob * Math.log(prob);
 		}
-		ent *= -1 / Math.log(2d);
+		ent *= (double) -1 / Math.log(2d);
 		
 		return ent;
 	}
@@ -75,16 +77,15 @@ public class DTLUtil {
 	
 	// hitung information gain
 	public static double calculateIgF(Instances ins, Attribute att) {
-		double entAll = calculateEntropyF(ins);
+		double entAll = calculateEntropyF(ins);                
 		double infGain = entAll;
 		ArrayList<String> arr_val = possibleAttributeValue(ins, att);
 
 		for (String s : arr_val) {
 			Instances subsetIns = filterInstances(ins, att, s);
 			double entSubsetIns = calculateEntropyF(subsetIns);
-			infGain -= (subsetIns.numInstances() / ins.numInstances()) * entSubsetIns;
+			infGain -= ((double) subsetIns.numInstances() / (double) ins.numInstances()) * entSubsetIns;
 		}
-
 		return infGain;
 	}
 

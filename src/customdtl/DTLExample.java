@@ -24,42 +24,43 @@ public class DTLExample {
 		Scanner sc = new Scanner(System.in);
 		boolean isStopped = false;
 		while (!isStopped) {
-			System.out.println("===========================");
-			DTLUtil.printAllFiles();
-			System.out.println("Nama file dataset: ");
-			String filename = sc.next();
-			DTLExample dtlModel = new DTLExample();
-			try {
+                        try {
+                                System.out.println("===========================");
+                                DTLUtil.printAllFiles();
+                                System.out.println("Nama file dataset: ");
+                                String filename = new String("mushrooms.csv");
+                                DTLExample dtlModel = new DTLExample();
+			
 				dtlModel.setTrainingDataset(loadData("files/"+filename));
 				if (dtlModel.getTrainingDataset()!=null) {
 				System.out.println("Indeks kelas di akhir? y/n");
-				String str = sc.next();
+				String str = new String("n");
 				int classIndex = 0;
 				if (str.equals("y")) {
 					classIndex = dtlModel.getTrainingDataset().numAttributes() - 1;
 				} else {
 					System.out.print("Jadi di indeks ke? ");
-					classIndex = sc.nextInt();
+					classIndex = 0;
 				}
 				if (dtlModel.getTrainingDataset().classIndex() == -1)
 		        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
-                    System.out.println(dtlModel.getTrainingDataset().attribute(0).toString());
-                    System.out.println(dtlModel.getTrainingDataset().attribute(2).toString());
                     System.out.println("=========================== TRAINING STARTED");
 					dtlModel.trainModel();
 					System.out.println(dtlModel.getMyClassifier());
 					System.out.println("=========================== TRAINING FINISHED");
 					
-					dtlModel.filterData();
+//					dtlModel.filterData();
 					dtlModel.selfTesting();
 					dtlModel.saveModel();	
-					dtlModel.testModel("files/"+filename);
+//					dtlModel.testModel("files/"+filename);
+//                                        System.out.println(dtlModel.getTrainingDataset().toString());
 				} else {
 					System.out.println("file not found.");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+                isStopped = true;
 		}
 		sc.close();
 		
@@ -86,9 +87,11 @@ public class DTLExample {
 	}
 	
 	public void trainModel() throws Exception {
-		Classifier DTL = new ID3Classifier();
+		ID3Classifier DTL = new ID3Classifier();
 		DTL.buildClassifier(this.getTrainingDataset());
 		this.setMyClassifier(DTL);
+//                System.out.println(DTL.tree.attributeToCheck.toString());
+//                System.out.println(DTL.tree.attributeValues.toString());
 	}
 	
 	public void filterData() throws Exception {
