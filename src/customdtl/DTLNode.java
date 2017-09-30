@@ -29,6 +29,8 @@ public class DTLNode {
     public ArrayList<Double> ig; // ig dari atribute yang mungkin, indeks sama dengan indeks possible atribute
     public ArrayList<DTLNode> children;
     
+    public ArrayList<String> attributeValues; // value yang mungkin dari attribute
+    
     public DTLNode(){
         className = null;
         classIndex = -1;
@@ -39,6 +41,7 @@ public class DTLNode {
         possibleAttribute = new ArrayList<>();
         ig = new ArrayList<>();
         children = new ArrayList<>();
+        // attributeValues di bangkitkan saat pemanggilan fungsi
     }
         
     public boolean isRoot(){
@@ -181,4 +184,7 @@ public class DTLNode {
         return index;
     }
     
+    public void saveAttributeValues(Instances ins) {
+        attributeValues = possibleAttributeValue(ins, attributeToCheck);
+    }
 }

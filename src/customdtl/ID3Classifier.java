@@ -33,6 +33,7 @@ public class ID3Classifier extends AbstractClassifier{
             // HITUNG IG TIAP POSSIBLE ATRIBUTE
             node.calculateIg(ins);
             node.attributeToCheck = node.possibleAttribute.get(node.getIndexBestAttribute());
+            node.saveAttributeValues(ins);
             
             // BANGKITKAN ANAK
             ArrayList<String> childString = node.possibleAttributeValue(ins, node.attributeToCheck);
@@ -54,15 +55,18 @@ public class ID3Classifier extends AbstractClassifier{
         tree = buildTree(ins);
     }
     
-    @Override
-    public double classifyInstance(Instance ins) {
+    public int getClassIndexFromTree(Instance ins) {
         //missing attribute
         if (tree.isLeaf()) {
-            return (double) tree.classIndex; // basis
-        } else {
-            //rekurens
-            return 0d;
+            return tree.classIndex; // basis
+        } else { // bukan daun
+            
         }        
+    }
+    
+    @Override
+    public double classifyInstance(Instance ins) {
+        return (double) getClassIndexFromTree(ins);
     }
     
     public boolean isAllSame(Instances ins){
