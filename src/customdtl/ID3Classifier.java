@@ -18,6 +18,7 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
                 // BASIS
                 node.className = ins.get(0).toString(ins.classIndex());
                 node.classIndex = ins.get(0).classIndex();
+                System.out.println("leaf");
             } else {
                 // REKURENS
 
@@ -70,10 +71,10 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
             } else { // bukan daun
                 // REKURENS
                 Attribute a = node.attributeToCheck;
-                System.out.println("ins = "+ins);
+//                System.out.println("ins = "+ins);
                 String val = ins.stringValue(a);
-                System.out.println("ins = "+ins);
-                System.out.println("val = "+val);
+//                System.out.println("ins = "+ins);
+//                System.out.println("val = "+val);
                 int index = node.attributeValues.indexOf(val);
                 DTLNode child = node.children.get(index);
                 return getClassIndex(ins, child);
