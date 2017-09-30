@@ -22,19 +22,24 @@ public class ID3Classifier extends AbstractClassifier{
             rootNode.classIndex = ins.classIndex();
         } else {
             // rootNode.className = null;
-            // hitung entropy
+            // rootNode.classIndex = -1;
             
-            
+            // hitung masukkan data ke classes
+            rootNode.classes = new int[ins.numClasses()];
+            for (int i=0;i<rootNode.classes.length;i++) {
+                rootNode.classes[i] = rootNode.count(ins, i);
+            }
         }
     }
     
     @Override
     public double classifyInstance(Instance ins) {
         //missing attribute
-        if (!Tree.AttributeName.isEmpty()) {
-            return (double) Tree.classIndex;
+        if (!Tree.className.isEmpty()) {
+            return (double) Tree.classIndex; // basis
         } else {
-            
+            //rekurens
+            return 0d;
         }        
     }
     
