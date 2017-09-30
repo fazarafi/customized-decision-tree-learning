@@ -7,7 +7,6 @@ package customdtl;
 
 import java.util.ArrayList;
 import weka.core.Instances;
-import weka.core.Instance;
 import weka.core.Attribute;
 
 /**
@@ -53,45 +52,13 @@ public class DTLNode {
         return classIndex == -1;
     }
     
-    // count the number of instance that has class index i
-    public int count(Instances ins, int i) {
-        int total = 0;
-        for (Instance singleIns : ins) {
-            if (singleIns.classIndex()==i)
-                total += 1;
-        }
-        return total;
-    }
-    
-    // fungsi bantuan untuk prosedur di bawahnya
-    public int[] getClassesDataF(Instances ins) {
-        int[] arr_class = new int[ins.numClasses()];
-        for (int i = 0; i < arr_class.length; i++) {
-            arr_class[i] = count(ins, i);
-        }
-        
-        return arr_class;
-    }
-    
     // hitung tiap kelas dan masukkan data ke classes (untuk perhitungan entropy)
     public void getClassesData(Instances ins) {
-        classes = getClassesDataF(ins);
+        classes = DTLUtil.getClassesDataF(ins);
     }
     
     // 2 fungsi bantuan untuk prosedur di bawahnya (1/2)
     public double calculateEntropyF(Instances ins, int[] arr_class) {
-        double ent = 0; // entropy
-        for (int i = 0; i < arr_class.length; i++) {
-            double prob = (double) arr_class[i] / (double) ins.numInstances();
-            ent += prob * Math.log(prob);
-        }
-        ent *= -1 / Math.log(2d);
-        
-        return ent;
-    }
-    // 2 fungsi bantuan untuk prosedur di bawahnya (2/2)
-    public double calculateEntropyF(Instances ins) {
-        int[] arr_class = getClassesDataF(ins);
         double ent = 0; // entropy
         for (int i = 0; i < arr_class.length; i++) {
             double prob = (double) arr_class[i] / (double) ins.numInstances();
@@ -125,51 +92,11 @@ public class DTLNode {
             }
         }
     }
-    
-    public Instances filterInstances(Instances ins, Attribute att, String value) {
-        Instances newIns = new Instances(ins);
-        
-        for (int i = newIns.numInstances() - 1; i >= 0; i--) {
-            Instance singleIns = newIns.get(i);
-            if (!singleIns.stringValue(att).equals(value)) {
-                newIns.delete(i);
-            }
-        }
-        
-        return newIns;
-    }
-    
-    // cari possible value dari atribute
-    public ArrayList<String> possibleAttributeValue(Instances ins, Attribute att) {
-        ArrayList<String> arr_val = new ArrayList<>();
-        
-        for (Instance singleIns : ins) {
-            if (!arr_val.contains(singleIns.stringValue(att)))
-                arr_val.add(singleIns.stringValue(att));
-        }
-        
-        return arr_val;
-    }
-    
-    // hitung information gain
-    public double calculateIgF(Instances ins, Attribute att) {
-        double entAll = calculateEntropyF(ins);
-        double infGain = entAll;
-        ArrayList<String> arr_val = possibleAttributeValue(ins, att);
-        
-        for (String s : arr_val) {
-            Instances subsetIns = filterInstances(ins, att, s);
-            double entSubsetIns = calculateEntropyF(subsetIns);
-            infGain -= (subsetIns.numInstances()/ins.numInstances())*entSubsetIns;
-        }
-        
-        return infGain;
-    }
-
+   
     // isi array of information gain
     public void calculateIg(Instances ins){
         for (Attribute att : possibleAttribute) {
-            ig.add(calculateIgF(ins, att));
+            ig.add(DTLUtil.calculateIgF(ins, att));
         }
     }
     
@@ -185,6 +112,6 @@ public class DTLNode {
     }
     
     public void saveAttributeValues(Instances ins) {
-        attributeValues = possibleAttributeValue(ins, attributeToCheck);
+        attributeValues = DTLUtil.possibleAttributeValue(ins, attributeToCheck);
     }
 }
