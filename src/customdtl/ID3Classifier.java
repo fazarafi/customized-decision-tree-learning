@@ -17,8 +17,7 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
             if (isAllSame(ins)) { // jadikan node ini sebagai node daun!!
                 // BASIS
                 node.className = ins.get(0).toString(ins.classIndex());
-                node.classIndex = ins.get(0).classIndex();
-                System.out.println("leaf");
+                node.classIndex = (int) ins.get(0).classValue();
             } else {
                 // REKURENS
 
@@ -30,20 +29,16 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
 
                 // DAPATKAN ATRIBUT YANG MASIH MUNGKIN
                 node.fillArrayPossibleAttribut(ins);
-//                System.out.println(node.possibleAttribute);
                 
                 // HITUNG IG TIAP POSSIBLE ATRIBUTE
                 node.calculateIg(ins);
                 node.attributeToCheck = node.possibleAttribute.get(node.getIndexBestAttribute());
-//                System.out.println(node.attributeToCheck);
                 node.saveAttributeValues(ins);
-//                System.out.println(node.attributeValues);
 
                 // BANGKITKAN ANAK
                 ArrayList<String> childString = node.attributeValues;
                 for (String s : childString) {
                     Instances subsetIns = DTLUtil.filterInstances(ins, node.attributeToCheck, s);
-//                    System.out.println("ins = "+ins.numInstances()+", subsetIns = "+subsetIns.numInstances());
                     DTLNode childNode = buildTree(subsetIns, node);
                     node.children.add(childNode);
                 }
@@ -72,10 +67,7 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
             } else { // bukan daun
                 // REKURENS
                 Attribute a = node.attributeToCheck;
-//                System.out.println("ins = "+ins);
                 String val = ins.stringValue(a);
-//                System.out.println("ins = "+ins);
-//                System.out.println("val = "+val);
                 int index = node.attributeValues.indexOf(val);
                 DTLNode child = node.children.get(index);
                 return getClassIndex(ins, child);
@@ -94,8 +86,6 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
     public boolean isAllSame(Instances ins) {
         Instance firstIns = ins.firstInstance();
         for(int i = 0; i<ins.numInstances();i++) {
-//            System.out.print(ins.get(i).toString(ins.classIndex()));
-//            System.out.println(","+firstIns.toString(ins.classIndex()));
             if (!ins.get(i).toString(ins.classIndex()).equals(firstIns.toString(ins.classIndex())) ){
                 return false;
             } 

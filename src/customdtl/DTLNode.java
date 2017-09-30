@@ -78,7 +78,6 @@ public class DTLNode implements Serializable{
     // dapatkan list atribute yang mungkin
     public void fillArrayPossibleAttribut(Instances ins) throws Exception {
         if (parent == null) {
-            System.out.println("root");
             int jmlAtr = ins.numAttributes();
             for (int i = 0; i < jmlAtr; i++) {
                 // masukin semua yg mungkin di instances-nya KECUALI class index
@@ -86,7 +85,6 @@ public class DTLNode implements Serializable{
                     possibleAttribute.add(ins.attribute(i));
             }
         } else { // ada parentnya
-            System.out.println("not root");
             int jmlAtr = parent.possibleAttribute.size();
             for (int i = 0; i < jmlAtr; i++) {
                 // masukin possible atribute parent, KECUALI atribute parentnya itu sndiri
