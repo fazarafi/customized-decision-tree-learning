@@ -55,26 +55,27 @@ public class ID3Classifier extends AbstractClassifier{
         tree = buildTree(ins);
     }
     
-    public int getClassIndexFromTree(Instance ins) {
+    public static int getClassIndex(Instance ins, DTLNode node) {
         //missing attribute
-        if (tree.isLeaf()) {
-            return tree.classIndex; // basis
+        if (node.isLeaf()) {
+            return node.classIndex; // basis
         } else { // bukan daun
-            
-        }        
+            String val = ins.stringValue(node.attributeToCheck);
+            int index = node.attributeValues.indexOf(val);
+            DTLNode child = node.children.get(index);
+            return getClassIndex(ins, child);
+        }
     }
     
     @Override
     public double classifyInstance(Instance ins) {
-        return (double) getClassIndexFromTree(ins);
+        return (double) getClassIndex(ins, tree);
     }
     
     public boolean isAllSame(Instances ins){
         Instance firstIns = ins.firstInstance();
         for(int i = 1; i<ins.numInstances();i++) {
-//            System.out.println("beforeif");
             if (!ins.get(i).toString(ins.classIndex()).equals(firstIns.toString(ins.classIndex())) ){
-//                System.out.println("before false");
                 return false;
             } 
         }
