@@ -19,7 +19,7 @@ public class DTLNode {
     public String className; // nama kelas apabila node adalah daun
     public int classIndex; // index kelas apabila node adalah daun
     
-    public int classes[];
+    public int[] classes;
     public double entropy; // entropy dari data     
     
     public DTLNode parent; // parent dari node ini (untuk akar, parent == null)
@@ -69,22 +69,36 @@ public class DTLNode {
         }
     }
     
+    // fungsi bantuan untuk prosedur di bawahnya
+    public int[] getClassesDataF(Instances ins) {
+        int[] arr_class = new int[ins.numClasses()];
+        for (int i = 0; i < arr_class.length; i++) {
+            arr_class[i] = count(ins, i);
+        }
+        
+        return arr_class;
+    }
+    
     // hitung tiap kelas dan masukkan data ke classes (untuk perhitungan entropy)
     public void getClassesData(Instances ins) {
-        classes = new int[ins.numClasses()];
-        for (int i = 0; i < classes.length; i++) {
-            classes[i] = count(ins, i);
+        classes = getClassesDataF(ins);
+    }
+    
+    // fungsi bantuan untuk prosedur di bawahnya
+    public double calculateEntropyF(Instances ins, int[] arr_class) {
+        double ent = 0; // entropy
+        for (int i = 0; i < arr_class.length; i++) {
+            double prob = (double) arr_class[i] / (double) ins.numInstances();
+            ent += prob * Math.log(prob);
         }
+        ent *= -1 / Math.log(2d);
+        
+        return ent;
     }
     
     // formulasi entropy
-    public void calculateEntropy(Instances ins){
-        entropy = 0;
-        for (int i = 0; i < classes.length; i++) {
-            double prob = (double) classes[i] / (double) ins.numInstances();
-            entropy += prob * Math.log(prob);
-        }
-        entropy *= -1 / Math.log(2d);
+    public void calculateEntropy(Instances ins) {
+        entropy = calculateEntropyF(ins, classes);
     }
     
 //    public void calculateIG(){
