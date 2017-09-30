@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import weka.core.Instance;
 
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
@@ -14,19 +15,38 @@ public class DatasetPreProcessor {
 	private double threshold[];
 	private Random randomizer;
 	
-//	public static void main(String[] args) {
-//		try {
-//			DatasetPreProcessor dsp = new DatasetPreProcessor("iris.arff");
-//			dsp.calcThresholdIfNominal();
-//			for (double t : dsp.getThreshold()) {
-//				System.out.println(t);
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//
-//
-//	}
+        public Instances changeAttrValue() {
+            Instances ins = new Instances(mainInst);
+            for (Instance singleIns : ins) {
+                for (int i=0;i<threshold.length;i++) {
+                    if (i!=mainInst.classIndex() && mainInst.attribute(i).isNumeric()) {
+                        // ini numeric
+                        if (singleIns.value(singleIns.attribute(i))>threshold[i]) {
+                            String s = "<"+threshold[i];
+                            singleIns.setValue(singleIns.attribute(i), s);
+                        }
+                    } // kalo nominal biarin aja
+                }
+            }
+            
+            return ins;
+        }
+        
+	public static void main(String[] args) {
+		try {
+			DatasetPreProcessor dsp = new DatasetPreProcessor("weather.numeric.arff");
+			dsp.calcThresholdIfNominal();
+                        System.out.println(dsp.mainInst);
+                        System.out.println(dsp.changeAttrValue());
+			for (double t : dsp.getThreshold()) {
+				System.out.println(t);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+	}
 	
 	public DatasetPreProcessor(String filename) throws Exception {
 		randomizer = new Random();
