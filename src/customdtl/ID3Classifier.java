@@ -30,20 +30,20 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
 
                 // DAPATKAN ATRIBUT YANG MASIH MUNGKIN
                 node.fillArrayPossibleAttribut(ins);
-                System.out.println(node.possibleAttribute);
+//                System.out.println(node.possibleAttribute);
                 
                 // HITUNG IG TIAP POSSIBLE ATRIBUTE
                 node.calculateIg(ins);
                 node.attributeToCheck = node.possibleAttribute.get(node.getIndexBestAttribute());
-                System.out.println(node.attributeToCheck);
+//                System.out.println(node.attributeToCheck);
                 node.saveAttributeValues(ins);
-                System.out.println(node.attributeValues);
+//                System.out.println(node.attributeValues);
 
                 // BANGKITKAN ANAK
                 ArrayList<String> childString = node.attributeValues;
                 for (String s : childString) {
                     Instances subsetIns = DTLUtil.filterInstances(ins, node.attributeToCheck, s);
-                    System.out.println("ins = "+ins.numInstances()+", subsetIns = "+subsetIns.numInstances());
+//                    System.out.println("ins = "+ins.numInstances()+", subsetIns = "+subsetIns.numInstances());
                     DTLNode childNode = buildTree(subsetIns, node);
                     node.children.add(childNode);
                 }
