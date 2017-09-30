@@ -78,23 +78,38 @@ public class DatasetPreProcessor {
 			}
 		}
 		
-		System.out.println("atribut");
-		for (int i=0; i<numInstances; i++) {
-			System.out.print(i+">"+valueArray[i]+" ");	
+//		System.out.println("atribut");
+//		for (int i=0; i<numInstances; i++) {
+//			System.out.print(i+">"+valueArray[i]+" ");	
+//		}
+//		
+//		System.out.println("");
+//		System.out.println("class");
+//		for (int i=0; i<numInstances; i++) {
+//			System.out.print(i+">"+classArray[i]+" ");	
+//		}
+//		System.out.println("");
+//		System.out.println(cutPointList);
+		
+		int chosenCutPoint = 0;
+		double maxIG = 0d;
+		int counter = 0;
+		for (int cutPoint : cutPointList) {
+			if (counter>10) {
+				break;
+			}
+			double cutPointIG = calculateIG(cutPoint);
+			if (cutPointIG > maxIG) {
+				maxIG = cutPointIG;
+				chosenCutPoint = cutPoint; 
+			}
+			counter++;
 		}
-		
-		System.out.println("");
-		System.out.println("class");
-		for (int i=0; i<numInstances; i++) {
-			System.out.print(i+">"+classArray[i]+" ");	
-		}
-		System.out.println("");
-		
-		System.out.println(cutPointList);
-		
-		
-		threshold = 0d; 
+		threshold = chosenCutPoint; 
 	}
+	
+	
+	
 	
 	public double calculateIG(int cutPoint) {
 		double ig = 0d;

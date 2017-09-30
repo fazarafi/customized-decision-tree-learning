@@ -32,20 +32,20 @@ public class DTLExample {
 			try {
 				dtlModel.setTrainingDataset(loadData("files/"+filename));
 				if (dtlModel.getTrainingDataset()!=null) {
-					System.out.println("Indeks kelas di akhir? y/n");
-					String str = sc.next();
-					int classIndex = 0;
-					if (str.equals("y")) {
-						classIndex = dtlModel.getTrainingDataset().numAttributes() - 1;
-					} else {
-						System.out.print("Jadi di indeks ke? ");
-						classIndex = sc.nextInt();
-					}
-					if (dtlModel.getTrainingDataset().classIndex() == -1)
-			        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
-                                        System.out.println(dtlModel.getTrainingDataset().attribute(0).toString());
-                                        System.out.println(dtlModel.getTrainingDataset().attribute(2).toString());
-					System.out.println("=========================== TRAINING STARTED");
+				System.out.println("Indeks kelas di akhir? y/n");
+				String str = sc.next();
+				int classIndex = 0;
+				if (str.equals("y")) {
+					classIndex = dtlModel.getTrainingDataset().numAttributes() - 1;
+				} else {
+					System.out.print("Jadi di indeks ke? ");
+					classIndex = sc.nextInt();
+				}
+				if (dtlModel.getTrainingDataset().classIndex() == -1)
+		        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
+                    System.out.println(dtlModel.getTrainingDataset().attribute(0).toString());
+                    System.out.println(dtlModel.getTrainingDataset().attribute(2).toString());
+                    System.out.println("=========================== TRAINING STARTED");
 					dtlModel.trainModel();
 					System.out.println(dtlModel.getMyClassifier());
 					System.out.println("=========================== TRAINING FINISHED");
