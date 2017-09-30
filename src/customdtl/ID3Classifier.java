@@ -3,38 +3,50 @@ package customdtl;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
+import java.lang.*;
 
 public class ID3Classifier extends AbstractClassifier{
     
-    public DTLNode Tree;
-    
-    public ID3Classifier(){
-    
-    }
+    public DTLNode tree;
     
     @Override
     public void buildClassifier(Instances ins) throws Exception {
 //      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     // create roots
-        DTLNode rootNode = new DTLNode();
-        if (isAllSame(ins)){
-            rootNode.className = ins.get(0).toString(ins.classIndex());
-            rootNode.classIndex = ins.classIndex();
+        DTLNode node = new DTLNode();
+        if (isAllSame(ins)){ // jadikan node ini sebagai node daun!!
+            // BASIS
+            node.className = ins.get(0).toString(ins.classIndex());
+            node.classIndex = ins.classIndex();
         } else {
-            // rootNode.className = null;
-            // hitung entropy
+            // REKURENS
+            // rootNode.className = null; (ada di konstruktor)
+            // rootNode.classIndex = -1; (ada di konstruktor)
             
+            // HITUNG ENTROPY
+            node.getClassesData(ins);
+            node.calculateEntropy(ins);
             
+            // DAPATKAN ATRIBUT YANG MASIH MUNGKIN
+            node.fillArrayPossibleAttribut(ins);
+            
+            // HITUNG IG TIAP POSSIBLE ATRIBUTE
+            node.calculateIg(ins);
+            
+            // BANGKITKAN ANAK
         }
+        
+        tree = rootNode;
     }
     
     @Override
     public double classifyInstance(Instance ins) {
         //missing attribute
-        if (!Tree.AttributeName.isEmpty()) {
-            return (double) Tree.classIndex;
+        if (tree.isLeaf()) {
+            return (double) tree.classIndex; // basis
         } else {
-            
+            //rekurens
+            return 0d;
         }        
     }
     

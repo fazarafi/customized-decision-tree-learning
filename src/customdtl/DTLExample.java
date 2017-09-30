@@ -43,6 +43,8 @@ public class DTLExample {
 					}
 					if (dtlModel.getTrainingDataset().classIndex() == -1)
 			        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
+                                        System.out.println(dtlModel.getTrainingDataset().attribute(0).toString());
+                                        System.out.println(dtlModel.getTrainingDataset().attribute(2).toString());
 					System.out.println("=========================== TRAINING STARTED");
 					dtlModel.trainModel();
 					System.out.println(dtlModel.getMyClassifier());
