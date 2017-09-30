@@ -35,6 +35,21 @@ public class ID3Classifier extends AbstractClassifier{
             }
             rootNode.entropy *= -1/Math.log(2d);
             
+            // list atribute yang mungkin
+            if (rootNode.parent == null) {
+                int jmlAtr = ins.numAttributes();
+                for (int i=0;i<jmlAtr;i++) {
+                    // masukin semua yg mungkin di instances-nya
+                    rootNode.possibleAttribute.add(ins.attribute(i));
+                }
+            } else { // ada parentnya
+                int jmlAtr = rootNode.parent.possibleAttribute.size();
+                for (int i=0;i<jmlAtr;i++) {
+                    // masukin possible atribute parent, KECUALI atribute parentnya itu sndiri
+                    if (!rootNode.parent.possibleAttribute.get(i).equals(rootNode.parent.attributeToCheck))
+                        rootNode.possibleAttribute.add(rootNode.parent.possibleAttribute.get(i));
+                }
+            }
         }
         
         tree = rootNode;

@@ -8,6 +8,7 @@ package customdtl;
 import java.util.ArrayList;
 import weka.core.Instances;
 import weka.core.Instance;
+import weka.core.Attribute;
 
 /**
  *
@@ -17,12 +18,12 @@ public class DTLNode {
     
     public double entropy; // entropy dari data 
     public double ig;
-//    public String attributeName;
+    public Attribute attributeToCheck;
 //    public String valueTo; 
 //    public Instances data;
-//    public DTLNode parent;
+    public DTLNode parent;
 //    public ArrayList<DTLNode> children;
-//    public ArrayList<String> possibleAttribut;
+    public ArrayList<Attribute> possibleAttribute;
     public int classes[];
     public String className; // nama kelas apabila node adalah daun
     public int classIndex; // index kelas apabila node adalah daun
@@ -30,6 +31,9 @@ public class DTLNode {
     public DTLNode(){
         className = null;
         classIndex = -1;
+        parent = null;
+        possibleAttribute = new ArrayList<Attribute>();
+        
     }
     
 //    public String getClassName(){
