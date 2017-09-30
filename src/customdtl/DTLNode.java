@@ -111,6 +111,19 @@ public class DTLNode {
             }
         }
     }
+    
+    public Instances filterInstances(Instances ins, int indexAtt, String value) {
+        Instances newIns = new Instances(ins);
+        
+        for (int i = newIns.numInstances() - 1; i >= 0; i--) {
+            Instance singleIns = newIns.get(i);
+            if (!singleIns.stringValue(indexAtt).equals(value)) {
+                newIns.delete(i);
+            }
+        }
+        
+        return newIns;
+    }
 
     
 //    public void calculateIG(){
