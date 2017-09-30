@@ -6,11 +6,7 @@ import weka.core.Instances;
 
 public class ID3Classifier extends AbstractClassifier{
     
-    public DTLNode Tree;
-    
-    public ID3Classifier(){
-    
-    }
+    public DTLNode tree;
     
     @Override
     public void buildClassifier(Instances ins) throws Exception {
@@ -30,13 +26,15 @@ public class ID3Classifier extends AbstractClassifier{
                 rootNode.classes[i] = rootNode.count(ins, i);
             }
         }
+        
+        tree = rootNode;
     }
     
     @Override
     public double classifyInstance(Instance ins) {
         //missing attribute
-        if (!Tree.className.isEmpty()) {
-            return (double) Tree.classIndex; // basis
+        if (!tree.className.isEmpty()) {
+            return (double) tree.classIndex; // basis
         } else {
             //rekurens
             return 0d;

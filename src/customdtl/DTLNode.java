@@ -15,14 +15,14 @@ import weka.core.Instance;
  */
 public class DTLNode {
     
-    private double Entropy; // entropy dari data 
-    private double IG;
-//    public String AttributeName;
-//    public String ValueTo; 
-//    public ArrayList<Instances>;
-//    public DTLNode Parent;
-//    public ArrayList<DTLNode> Children;
-//    public ArrayList<String> PossibleAttribut;
+    public double entropy; // entropy dari data 
+    public double ig;
+//    public String attributeName;
+//    public String valueTo; 
+//    public Instances data;
+//    public DTLNode parent;
+//    public ArrayList<DTLNode> children;
+//    public ArrayList<String> possibleAttribut;
     public int classes[];
     public String className; // nama kelas apabila node adalah daun
     public int classIndex; // index kelas apabila node adalah daun
@@ -48,16 +48,8 @@ public class DTLNode {
         
     }
     
-    public double getEntropy(){
-        return Entropy;
-    }
-    
     public void calculateIG(){
         
-    }
-    
-    public double getIG(){
-        return IG;
     }
     
     public void setParent(DTLNode parent){
