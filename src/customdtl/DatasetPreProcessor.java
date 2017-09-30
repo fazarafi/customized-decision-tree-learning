@@ -120,7 +120,7 @@ public class DatasetPreProcessor {
 			ArrayList<String> arr_val = DTLUtil.possibleAttributeValue(splittedInst[i], classAtt);
 			System.out.println(arr_val);
 			
-			double entSubsetIns = DTLUtil.calculateEntropyF(splittedInst[i],arr_val);
+			double entSubsetIns = DTLUtil.calculateEntropyForContF(splittedInst[i],arr_val);
 			ig -= (splittedInst[i].numInstances() / sortedInst.numInstances()) * entSubsetIns;	
 		}
 		return ig;
