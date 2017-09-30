@@ -22,7 +22,7 @@ public class DTLNode implements Serializable{
     public int[] classes; // data kelas dan jumlahnya (untuk kalkulasi entropy)
     public double entropy; // entropy dari data     
     
-    public DTLNode parent; // parent dari node ini (untuk akar, parent == null)
+//    public DTLNode parent; // parent dari node ini (untuk akar, parent == null)
     public Attribute attributeToCheck; // atribute yang di check di node itu
     public ArrayList<Attribute> possibleAttribute; // atribute yang masih tersisa
     
@@ -31,12 +31,12 @@ public class DTLNode implements Serializable{
     
     public ArrayList<String> attributeValues; // value yang mungkin dari attribute
     
-    public DTLNode(){
+    public DTLNode() throws Exception {
         className = null;
         classIndex = -1;
         // classes di bangkitkan saat pemanggilan fungsi
         // entropy tidak perlu diinisialisasi
-        parent = null;
+//        parent = null;
         attributeToCheck = null;
         possibleAttribute = new ArrayList<>();
         ig = new ArrayList<>();
@@ -44,22 +44,22 @@ public class DTLNode implements Serializable{
         // attributeValues di bangkitkan saat pemanggilan fungsi
     }
         
-    public boolean isRoot(){
-        return parent == null;
-    }
+//    public boolean isRoot() throws Exception {
+//        return parent == null;
+//    }
     
-    public boolean isLeaf(){
+    public boolean isLeaf() throws Exception {
         // return !(className.isEmpty());
-        return classIndex == -1;
+        return classIndex != -1;
     }
     
     // hitung tiap kelas dan masukkan data ke classes (untuk perhitungan entropy)
-    public void getClassesData(Instances ins) {
+    public void getClassesData(Instances ins) throws Exception {
         classes = DTLUtil.getClassesDataF(ins);
     }
     
     // 2 fungsi bantuan untuk prosedur di bawahnya (1/2)
-    public double calculateEntropyF(Instances ins, int[] arr_class) {
+    public double calculateEntropyF(Instances ins, int[] arr_class) throws Exception {
         double ent = 0; // entropy
         for (int i = 0; i < arr_class.length; i++) {
             double prob = (double) arr_class[i] / (double) ins.numInstances();
@@ -71,38 +71,41 @@ public class DTLNode implements Serializable{
     }
     
     // formulasi entropy
-    public void calculateEntropy(Instances ins) {
+    public void calculateEntropy(Instances ins) throws Exception {
         entropy = calculateEntropyF(ins, classes);
     }
     
     // dapatkan list atribute yang mungkin
-    public void fillArrayPossibleAttribut(Instances ins) {
-        if (parent == null) {
+    public void fillArrayPossibleAttribut(Instances ins, ArrayList<Attribute> parentPossibleAttribute, Attribute parentAttributeToCheck) throws Exception {
+        if (parentPossibleAttribute == null) {
+            System.out.println("root");
             int jmlAtr = ins.numAttributes();
             for (int i = 0; i < jmlAtr; i++) {
-                // masukin semua yg mungkin di instances-nya
-                possibleAttribute.add(ins.attribute(i));
+                // masukin semua yg mungkin di instances-nya KECUALI class index
+                if (i != ins.classIndex())
+                    possibleAttribute.add(ins.attribute(i));
             }
         } else { // ada parentnya
-            int jmlAtr = parent.possibleAttribute.size();
+            System.out.println("leaf");
+            int jmlAtr = parentPossibleAttribute.size();
             for (int i = 0; i < jmlAtr; i++) {
                 // masukin possible atribute parent, KECUALI atribute parentnya itu sndiri
-                if (!parent.possibleAttribute.get(i).equals(parent.attributeToCheck)) {
-                    possibleAttribute.add(parent.possibleAttribute.get(i));
+                if (!parentPossibleAttribute.get(i).equals(parentAttributeToCheck)) {
+                    possibleAttribute.add(parentPossibleAttribute.get(i));
                 }
             }
         }
     }
    
     // isi array of information gain
-    public void calculateIg(Instances ins){
+    public void calculateIg(Instances ins) throws Exception {
         for (Attribute att : possibleAttribute) {
             ig.add(DTLUtil.calculateIgF(ins, att));
         }
     }
     
     // cari index attribute dengan ig max
-    public int getIndexBestAttribute() {
+    public int getIndexBestAttribute() throws Exception {
         int index = 0;
         for (int i=0;i<ig.size();i++) {
             if (ig.get(i) > ig.get(index))
@@ -112,7 +115,7 @@ public class DTLNode implements Serializable{
         return index;
     }
     
-    public void saveAttributeValues(Instances ins) {
+    public void saveAttributeValues(Instances ins) throws Exception {
         attributeValues = DTLUtil.possibleAttributeValue(ins, attributeToCheck);
     }
 }
