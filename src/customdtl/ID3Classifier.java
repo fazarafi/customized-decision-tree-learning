@@ -4,8 +4,6 @@ import weka.classifiers.AbstractClassifier;
 import java.util.ArrayList;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.Attribute;
-import java.lang.*;
 
 public class ID3Classifier extends AbstractClassifier{
     
@@ -36,9 +34,9 @@ public class ID3Classifier extends AbstractClassifier{
             node.saveAttributeValues(ins);
             
             // BANGKITKAN ANAK
-            ArrayList<String> childString = node.possibleAttributeValue(ins, node.attributeToCheck);
+            ArrayList<String> childString = node.attributeValues;
             for (String s : childString) {
-                Instances subsetIns = node.filterInstances(ins, node.attributeToCheck, s);
+                Instances subsetIns = DTLUtil.filterInstances(ins, node.attributeToCheck, s);
                 DTLNode childNode = buildTree(subsetIns);
                 childNode.parent = node;
                 node.children.add(childNode);

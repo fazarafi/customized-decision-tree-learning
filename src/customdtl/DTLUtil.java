@@ -74,7 +74,7 @@ public class DTLUtil {
         return infGain;
     }
     
- // cari possible value dari atribute
+    // cari possible value dari atribute
     public static ArrayList<String> possibleAttributeValue(Instances ins, Attribute att) {
         ArrayList<String> arr_val = new ArrayList<>();
         
