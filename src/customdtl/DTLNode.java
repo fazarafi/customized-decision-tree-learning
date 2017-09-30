@@ -29,7 +29,7 @@ public class DTLNode {
     public ArrayList<Double> ig; // ig dari atribute yang mungkin, indeks sama dengan indeks possible atribute
 //    public String valueTo; 
 //    public Instances data;
-//    public ArrayList<DTLNode> children;
+    public ArrayList<DTLNode> children;
     
     
     
@@ -39,7 +39,7 @@ public class DTLNode {
         classIndex = -1;
         parent = null;
         possibleAttribute = new ArrayList<Attribute>();
-        
+        children = new ArrayList<DTLNode>();
     }
         
     public boolean isRoot(){

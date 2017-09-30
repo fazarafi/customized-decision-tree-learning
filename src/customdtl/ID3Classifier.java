@@ -19,6 +19,7 @@ public class ID3Classifier extends AbstractClassifier{
             node.classIndex = ins.classIndex();
         } else {
             // REKURENS
+            
             // rootNode.className = null; (ada di konstruktor)
             // rootNode.classIndex = -1; (ada di konstruktor)
             
@@ -34,9 +35,12 @@ public class ID3Classifier extends AbstractClassifier{
             node.attributeToCheck = node.possibleAttribute.get(node.getIndexBestAttribute());
             
             // BANGKITKAN ANAK
-            ArrayList<String> child = node.possibleAttributeValue(ins, node.attributeToCheck);
-            for (String s : child) {
-                
+            ArrayList<String> childString = node.possibleAttributeValue(ins, node.attributeToCheck);
+            for (String s : childString) {
+                Instances subsetIns = node.filterInstances(ins, node.attributeToCheck, s);
+                DTLNode childNode = buildTree(subsetIns);
+                childNode.parent = node;
+                node.children.add(childNode);
             }
         }
         
