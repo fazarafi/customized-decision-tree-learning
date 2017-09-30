@@ -19,7 +19,7 @@ public class DTLNode {
     public String className; // nama kelas apabila node adalah daun
     public int classIndex; // index kelas apabila node adalah daun
     
-    public int[] classes;
+    public int[] classes; // data kelas dan jumlahnya (untuk kalkulasi entropy)
     public double entropy; // entropy dari data     
     
     public DTLNode parent; // parent dari node ini (untuk akar, parent == null)
@@ -27,19 +27,18 @@ public class DTLNode {
     public ArrayList<Attribute> possibleAttribute; // atribute yang masih tersisa
     
     public ArrayList<Double> ig; // ig dari atribute yang mungkin, indeks sama dengan indeks possible atribute
-//    public String valueTo; 
-//    public Instances data;
     public ArrayList<DTLNode> children;
-    
-    
-    
     
     public DTLNode(){
         className = null;
         classIndex = -1;
+        // classes di bangkitkan saat pemanggilan fungsi
+        // entropy tidak perlu diinisialisasi
         parent = null;
-        possibleAttribute = new ArrayList<Attribute>();
-        children = new ArrayList<DTLNode>();
+        attributeToCheck = null;
+        possibleAttribute = new ArrayList<>();
+        ig = new ArrayList<>();
+        children = new ArrayList<>();
     }
         
     public boolean isRoot(){
@@ -182,19 +181,4 @@ public class DTLNode {
         return index;
     }
     
-    // menyimpan parent dari node tersebut
-    // (Root/akar tidak akan memanggil prosedur ini)
-//    public void setParent(DTLNode parent){
-//        
-//    }
-    
-    // bangkitkan anak dari node
-    // don't forget to set parent in the end!!!!
-//    public void addChild(DTLNode child){
-//        
-//    }
-    
-//    public void removeParent(){
-//        
-//    }
 }
