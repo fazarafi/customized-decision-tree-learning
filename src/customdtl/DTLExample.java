@@ -25,7 +25,7 @@ public class DTLExample {
 		boolean isStopped = false;
 		while (!isStopped) {
 			System.out.println("===========================");
-			printAllFiles();
+			DTLUtil.printAllFiles();
 			System.out.println("Nama file dataset: ");
 			String filename = sc.next();
 			DTLExample dtlModel = new DTLExample();
@@ -110,7 +110,7 @@ public class DTLExample {
 	}
 	
 	public void testModel(String filename) throws Exception {
-		if (isFileExist(filename) && DataSource.isArff(filename)) {
+		if (DTLUtil.isFileExist(filename) && DataSource.isArff(filename)) {
 			DataSource source = new DataSource(filename);
 			int lastIndex = this.getTrainingDataset().classIndex();
 			int correctClass = 0;
@@ -152,7 +152,7 @@ public class DTLExample {
 
 	public static Instances loadData(String filename) throws Exception {
 		Instances dataTrain = null;
-		if (isFileExist(filename)) {
+		if (DTLUtil.isFileExist(filename)) {
 			String fileType = filename.split("\\.")[1];
 			if (fileType.equals("csv")) {
 				CSVLoader loader = new CSVLoader();
@@ -168,22 +168,4 @@ public class DTLExample {
 		
 	    return dataTrain;
     }
-	
-	public static boolean isFileExist(String filename) {
-		File tmpDir = new File(filename);
-		return tmpDir.exists();
-	}
-	
-	public static void printAllFiles() { 
-		File folder = new File("files");
-		File[] listOfFiles = folder.listFiles();
-	
-	    for (int i = 0; i < listOfFiles.length; i++) {
-	      if (listOfFiles[i].isFile()) {
-	        System.out.println("- " + listOfFiles[i].getName());
-	      } else if (listOfFiles[i].isDirectory()) {
-	        System.out.println("Directory " + listOfFiles[i].getName());
-	      }
-	    }
-	}
 }
