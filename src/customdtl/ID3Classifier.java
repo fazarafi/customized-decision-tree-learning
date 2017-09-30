@@ -3,6 +3,7 @@ package customdtl;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
+import java.lang.*;
 
 public class ID3Classifier extends AbstractClassifier{
     
@@ -25,6 +26,15 @@ public class ID3Classifier extends AbstractClassifier{
             for (int i=0;i<rootNode.classes.length;i++) {
                 rootNode.classes[i] = rootNode.count(ins, i);
             }
+            
+            // hitung entropy
+            rootNode.entropy = 0;
+            for (int i=0;i<rootNode.classes.length;i++) {
+                double prob = (double) rootNode.classes[i] / (double) ins.numInstances();
+                rootNode.entropy += prob*Math.log(prob);
+            }
+            rootNode.entropy *= -1/Math.log(2d);
+            
         }
         
         tree = rootNode;
