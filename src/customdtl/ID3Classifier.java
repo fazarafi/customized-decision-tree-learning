@@ -37,10 +37,11 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
                 node.saveAttributeValues(ins);
 
                 // BANGKITKAN ANAK
-                ArrayList<String> childString = node.attributeValues;
+        
+                ArrayList<String> childString = DTLUtil.possibleAttributeValue(ins, node.attributeToCheck);
                 for (String s : childString) {
                     Instances subsetIns = DTLUtil.filterInstances(ins, node.attributeToCheck, s);
-                    System.out.println("ins = "+ins.numInstances()+", sub = "+subsetIns.numInstances());
+//                    System.out.println("ins = "+ins.numInstances()+", sub = "+subsetIns.numInstances());
                     DTLNode childNode = buildTree(subsetIns, node);
                     node.children.add(childNode);
                 }
