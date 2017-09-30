@@ -114,8 +114,12 @@ public class DTLNode implements Serializable{
     }
     
     public void saveAttributeValues(Instances ins) throws Exception {
+        attributeValues = DTLUtil.possibleAttributeValue(ins, attributeToCheck);
+    }
+    
+    public void saveAllAttributeValues(Instances ins) throws Exception {
         for (int i=0;i<attributeToCheck.numValues();i++) {
-            attributeValues.add(new String(attributeToCheck.value(i)));
+            attributeValues.add(attributeToCheck.value(i));
         }
 //        System.out.println("aV = "+attributeValues);
     }

@@ -71,14 +71,17 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
             } else { // bukan daun
                 // REKURENS
                 Attribute a = node.attributeToCheck;
-                System.out.println(a);
+//                System.out.println(a);
                 String val = ins.stringValue(a);
-                System.out.println(val);
-                System.out.println(node.attributeValues);
+//                System.out.println(val);
+//                System.out.println(node.attributeValues);
                 int index = node.attributeValues.indexOf(val);
-                System.out.println(index);
+                // if not found (attribute doesn't exist in data train)
+                if (index == -1)
+                    index = 0; // let's just use a default value
+//                System.out.println(index);
                 DTLNode child = node.children.get(index);
-                System.out.println("check");
+//                System.out.println("check");
                 return getClassIndex(ins, child);
             }
         } catch (Exception e) {

@@ -50,7 +50,7 @@ public class DTLExample {
 					System.out.println("=========================== TRAINING FINISHED");
 					
 //					dtlModel.filterData();
-//					dtlModel.selfTesting();
+					dtlModel.selfTesting();
 					dtlModel.saveModel();	
 //					dtlModel.testModel("files/"+filename);
 //                                        System.out.println(dtlModel.getTrainingDataset().toString());
