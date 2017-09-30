@@ -6,6 +6,8 @@ import weka.core.Instances;
 
 public class ID3Classifier extends AbstractClassifier{
     
+    public DTLNode Tree;
+    
     public ID3Classifier(){
     
     }
@@ -16,14 +18,24 @@ public class ID3Classifier extends AbstractClassifier{
     // create roots
         DTLNode rootNode = new DTLNode();
         if (isAllSame(ins)){
-
+            rootNode.className = ins.get(0).toString(ins.classIndex());
+            rootNode.classIndex = ins.classIndex();
+        } else {
+            // rootNode.className = null;
+            // hitung entropy
+            
+            
         }
     }
     
     @Override
     public double classifyInstance(Instance ins) {
-    //missing attribute
-        return 0;
+        //missing attribute
+        if (!Tree.AttributeName.isEmpty()) {
+            return (double) Tree.classIndex;
+        } else {
+            
+        }        
     }
     
     public boolean isAllSame(Instances ins){
