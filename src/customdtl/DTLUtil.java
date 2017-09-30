@@ -63,10 +63,8 @@ public class DTLUtil {
 		int[] arr_class = getClassesDataF(ins);
 		double ent = 0; // entropy
 		for (int i = 0; i < arr_class.length; i++) {
-			if (arr_class[i]!=0) {
-				double prob = (double) arr_class[i] / (double) ins.numInstances();
-				ent += prob * Math.log(prob);
-			}
+			double prob = (double) arr_class[i] / (double) ins.numInstances();
+			ent += prob * Math.log(prob);
 		}
 		ent *= -1 / Math.log(2d);
 		

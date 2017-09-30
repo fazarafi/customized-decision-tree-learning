@@ -3,6 +3,7 @@ package customdtl;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import weka.core.Attribute;
 import weka.core.Instances;
@@ -12,15 +13,18 @@ import weka.core.converters.ConverterUtils.DataSource;
 public class DatasetPreProcessor {
 	private Instances datasetInstances;
 	private double threshold;
+	private Random randomizer;
 	
 	public static void main(String[] args) {
 		DatasetPreProcessor dsp = new DatasetPreProcessor("iris.arff");
 		dsp.calculateThreshold(0);
+		System.out.println(dsp.threshold);
 		
 	}
 	
 	public DatasetPreProcessor(String filename) {
 		try {
+			randomizer = new Random();
 			setDataset("files/"+filename);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -95,19 +99,22 @@ public class DatasetPreProcessor {
 		int chosenCutPoint = 0;
 		double maxIG = 0d;
 		int counter = 0;
-		for (int cutPoint : cutPointList) {
-			if (counter>2) {
-				break;
-			}
-			double cutPointIG = calculateIG(cutPoint,sortedInst);
-			System.out.println(cutPoint+". "+cutPointIG);
+		
+		
+        
+		while (counter<10 && !cutPointList.isEmpty()) {
+			int index = randomizer.nextInt(cutPointList.size());
+			System.out.println(cutPointList.get(index));
+			double cutPointIG = calculateIG(cutPointList.get(index),sortedInst);
+//			System.out.println(cutPoint+". "+cutPointIG);
 			if (cutPointIG > maxIG) {
 				maxIG = cutPointIG;
-				chosenCutPoint = cutPoint; 
+				chosenCutPoint = cutPointList.get(index); 
 			}
+			cutPointList.remove(index); // memastikan angka random tidak berulang
 			counter++;
-			
 		}
+		
 		threshold = chosenCutPoint; 
 	}
 	
@@ -117,9 +124,7 @@ public class DatasetPreProcessor {
 		Instances[] splittedInst = splitInstances(cutPoint,sortedInst);
 		for (int i=0; i<2; i++) {
 			Attribute classAtt = splittedInst[i].attribute(splittedInst[i].classIndex());
-			ArrayList<String> arr_val = DTLUtil.possibleAttributeValue(splittedInst[i], classAtt);
-			System.out.println(arr_val);
-			
+			ArrayList<String> arr_val = DTLUtil.possibleAttributeValue(splittedInst[i], classAtt);			
 			double entSubsetIns = DTLUtil.calculateEntropyForContF(splittedInst[i],arr_val);
 			ig -= (splittedInst[i].numInstances() / sortedInst.numInstances()) * entSubsetIns;	
 		}
