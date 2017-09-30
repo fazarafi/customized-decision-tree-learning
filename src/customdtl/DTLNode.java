@@ -5,6 +5,7 @@
  */
 package customdtl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import weka.core.Instances;
 import weka.core.Attribute;
@@ -13,7 +14,7 @@ import weka.core.Attribute;
  *
  * @author adesu
  */
-public class DTLNode {
+public class DTLNode implements Serializable{
     
     public String className; // nama kelas apabila node adalah daun
     public int classIndex; // index kelas apabila node adalah daun

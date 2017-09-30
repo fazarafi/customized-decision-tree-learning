@@ -86,7 +86,7 @@ public class DTLExample {
 	}
 	
 	public void trainModel() throws Exception {
-		Classifier DTL = new J48();
+		Classifier DTL = new ID3Classifier();
 		DTL.buildClassifier(this.getTrainingDataset());
 		this.setMyClassifier(DTL);
 	}

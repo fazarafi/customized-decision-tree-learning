@@ -1,11 +1,12 @@
 package customdtl;
 
+import java.io.Serializable;
 import weka.classifiers.AbstractClassifier;
 import java.util.ArrayList;
 import weka.core.Instance;
 import weka.core.Instances;
 
-public class ID3Classifier extends AbstractClassifier{
+public class ID3Classifier extends AbstractClassifier implements Serializable{
     
     public DTLNode tree;
     
