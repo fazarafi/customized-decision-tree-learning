@@ -7,6 +7,9 @@ import java.util.Scanner;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.trees.J48;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
@@ -27,29 +30,28 @@ public class DTLExample {
 		while (!isStopped) {
             try {
                 System.out.println("===============================");
-                
                 DTLUtil.printAllFiles();
-                System.out.println("Nama file dataset: ");
-                String filename = new String("mushroomsDYAS.csv");
+                System.out.println("Nama file dataset: mushrooms.csv");
+                String filename = new String("mushrooms.csv");
                 DTLExample dtlModel = new DTLExample();
 			
 				dtlModel.setTrainingDataset(loadData("files/"+filename));
 				if (dtlModel.getTrainingDataset()!=null) {
 					System.out.println("Indeks kelas di akhir? y/n");
-					String str = new String("n");
-					int classIndex = 0;
+					String str = new String("");
+					int classIndex;
 					
 					if (str.equals("y")) {
 						classIndex = dtlModel.getTrainingDataset().numAttributes() - 1;
 					} else {
 						System.out.print("Jadi di indeks ke? ");
-						classIndex = 0;
+						classIndex = sc.nextInt();
 					}
 					if (dtlModel.getTrainingDataset().classIndex() == -1) {
 			        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
 					}
 					
-					System.out.println("Remove attributes? (y/n)");
+					System.out.println("Remove attribute? (y/n)");
 					str = sc.next();
 					if (str.equals("y")) {
 						System.out.print("Indeks Atribut ke? ");
@@ -57,18 +59,7 @@ public class DTLExample {
 						dtlModel.removeAttribute(attId);
 					}
 					
-					System.out.println("Load Model baru? (y/n)");
-					str = sc.next();
-					if (str.equals("y")) {
-						dtlModel.loadModel();
-						System.out.println("Model berhasil di-load!");
-					} else {
-						System.out.println("=========================== TRAINING STARTED");
-						dtlModel.trainModel();
-						System.out.println("=========================== TRAINING FINISHED");
-					}
-					
-	                System.out.println("Filter dataset dengan Resample? (y/n)");
+					System.out.println("Filter dataset dengan Resample? (y/n)");
 	                str = sc.next();
 					if (str.equals("y")) {
 						dtlModel.filterData();
@@ -76,6 +67,10 @@ public class DTLExample {
 					} else {
 						System.out.println("Dataset tidak di-filter!");
 					}
+					
+					System.out.println("=========================== TRAINING STARTED");
+					dtlModel.trainModel();
+					System.out.println("=========================== TRAINING FINISHED");
 					
 					System.out.println("Tes model dengan 10-fold Cross Validation? (y/n)");
 					str = sc.next();
@@ -96,8 +91,34 @@ public class DTLExample {
 					if (str.equals("y")) {
 						dtlModel.saveModel();
 					}
-//					dtlModel.testModel("files/"+filename);
-//              	System.out.println(dtlModel.getTrainingDataset().toString());
+					
+					System.out.println("CLASSIFY DATA");
+					System.out.println("Load Model untuk Classify Instance? (y/n)");
+					str = sc.next();
+					if (str.equals("y")) {
+						dtlModel.loadModel();
+						System.out.println("Model berhasil di-load!");
+					} 
+					
+					int numAtt = dtlModel.getTrainingDataset().numAttributes();
+					int classIdx = dtlModel.getTrainingDataset().classIndex();
+					System.out.println("Jumlah Atribut ="+numAtt);
+					System.out.println("Atribut Kelas="+dtlModel.getTrainingDataset().classIndex());
+					System.out.println("Contoh Masukan ="+dtlModel.getTrainingDataset().instance(0).toString());
+					FastVector fvWekaAttributes = new FastVector(numAtt);
+					for (int i=0; i<numAtt;i++) {
+						fvWekaAttributes.addElement(dtlModel.getTrainingDataset().attribute(i));
+					}
+					Instance unseenInst = new DenseInstance(numAtt);
+					for (int i=0; i<numAtt;i++) {
+						if (i!=classIdx) {
+							System.out.print("Atribut ke-"+i+": ");
+							String input = sc.next();
+							unseenInst.setValue((Attribute)fvWekaAttributes.elementAt(i), input);
+						}
+					}
+					System.out.println("Terklasifikasi: "+dtlModel.getTrainingDataset().attribute(classIdx)
+							.value((int)dtlModel.classifyInputData(unseenInst)));
 				} else {
 					System.out.println("file not found.");
 				}
@@ -217,12 +238,10 @@ public class DTLExample {
 	}
 	
 	public static void handleMissingAttribute(Instances data) {
-		System.out.println("sblm "+data.numInstances());
 		int numAttributes = data.numAttributes();
 		for (int i=0; i<numAttributes; i++) {
 			data.deleteWithMissing(i);
 		}
-		System.out.println("stlh "+data.numInstances());
 	}
 
 	public static Instances loadData(String filename) throws Exception {
