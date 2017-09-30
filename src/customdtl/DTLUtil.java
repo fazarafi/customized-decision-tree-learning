@@ -59,7 +59,7 @@ public class DTLUtil {
 		return ent;
 	}
 
-	public static double calculateEntropyF(Instances ins, ArrayList<String> arr_val) {
+	public static double calculateEntropyForContF(Instances ins, ArrayList<String> arr_val) {
 		int[] arr_class = getClassesDataF(ins);
 		double ent = 0; // entropy
 		for (int i = 0; i < arr_class.length; i++) {
