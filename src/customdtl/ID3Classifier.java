@@ -14,42 +14,19 @@ public class ID3Classifier extends AbstractClassifier{
 //      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     // create roots
         DTLNode rootNode = new DTLNode();
-        if (isAllSame(ins)){
+        if (isAllSame(ins)){ // jadikan node ini sebagai node daun!!
             rootNode.className = ins.get(0).toString(ins.classIndex());
             rootNode.classIndex = ins.classIndex();
         } else {
-            // rootNode.className = null;
-            // rootNode.classIndex = -1;
+            // rootNode.className = null; (ada di konstruktor)
+            // rootNode.classIndex = -1; (ada di konstruktor)
             
-            // hitung masukkan data ke classes
-            rootNode.classes = new int[ins.numClasses()];
-            for (int i=0;i<rootNode.classes.length;i++) {
-                rootNode.classes[i] = rootNode.count(ins, i);
-            }
+            // HITUNG ENTROPY
+            rootNode.getClassesData(ins);
+            rootNode.calculateEntropy(ins);
             
-            // hitung entropy
-            rootNode.entropy = 0;
-            for (int i=0;i<rootNode.classes.length;i++) {
-                double prob = (double) rootNode.classes[i] / (double) ins.numInstances();
-                rootNode.entropy += prob*Math.log(prob);
-            }
-            rootNode.entropy *= -1/Math.log(2d);
-            
-            // list atribute yang mungkin
-            if (rootNode.parent == null) {
-                int jmlAtr = ins.numAttributes();
-                for (int i=0;i<jmlAtr;i++) {
-                    // masukin semua yg mungkin di instances-nya
-                    rootNode.possibleAttribute.add(ins.attribute(i));
-                }
-            } else { // ada parentnya
-                int jmlAtr = rootNode.parent.possibleAttribute.size();
-                for (int i=0;i<jmlAtr;i++) {
-                    // masukin possible atribute parent, KECUALI atribute parentnya itu sndiri
-                    if (!rootNode.parent.possibleAttribute.get(i).equals(rootNode.parent.attributeToCheck))
-                        rootNode.possibleAttribute.add(rootNode.parent.possibleAttribute.get(i));
-                }
-            }
+            // DAPATKAN ATRIBUT YANG MASIH MUNGKIN
+            rootNode.fillArrayPossibleAttribut(ins);
         }
         
         tree = rootNode;

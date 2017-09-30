@@ -18,12 +18,12 @@ public class DTLNode {
     
     public double entropy; // entropy dari data 
     public double ig;
-    public Attribute attributeToCheck;
+    public Attribute attributeToCheck; // atribute yang di check di node itu
 //    public String valueTo; 
 //    public Instances data;
     public DTLNode parent;
 //    public ArrayList<DTLNode> children;
-    public ArrayList<Attribute> possibleAttribute;
+    public ArrayList<Attribute> possibleAttribute; // atribute yang masih tersisa
     public int classes[];
     public String className; // nama kelas apabila node adalah daun
     public int classIndex; // index kelas apabila node adalah daun
@@ -44,12 +44,41 @@ public class DTLNode {
 //        className = s;
 //    }
     
-    public void fillArrayPossibleAttribut(){
-        
+    // dapatkan list atribute yang mungkin
+    public void fillArrayPossibleAttribut(Instances ins){
+        if (parent == null) {
+            int jmlAtr = ins.numAttributes();
+            for (int i = 0; i < jmlAtr; i++) {
+                // masukin semua yg mungkin di instances-nya
+                possibleAttribute.add(ins.attribute(i));
+            }
+        } else { // ada parentnya
+            int jmlAtr = parent.possibleAttribute.size();
+            for (int i = 0; i < jmlAtr; i++) {
+                // masukin possible atribute parent, KECUALI atribute parentnya itu sndiri
+                if (!parent.possibleAttribute.get(i).equals(parent.attributeToCheck)) {
+                    possibleAttribute.add(parent.possibleAttribute.get(i));
+                }
+            }
+        }
     }
     
-    public void calculateEntropy(){
-        
+    // hitung tiap kelas dan masukkan data ke classes (untuk perhitungan entropy)
+    public void getClassesData(Instances ins) {
+        classes = new int[ins.numClasses()];
+        for (int i = 0; i < classes.length; i++) {
+            classes[i] = count(ins, i);
+        }
+    }
+    
+    // formulasi entropy
+    public void calculateEntropy(Instances ins){
+        entropy = 0;
+        for (int i = 0; i < classes.length; i++) {
+            double prob = (double) classes[i] / (double) ins.numInstances();
+            entropy += prob * Math.log(prob);
+        }
+        entropy *= -1 / Math.log(2d);
     }
     
     public void calculateIG(){
