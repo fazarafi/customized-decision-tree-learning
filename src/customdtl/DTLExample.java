@@ -22,25 +22,45 @@ public class DTLExample {
 		
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
-		System.out.println("Nama file dataset: ");
-		String filename = sc.next();
-		DTLExample dtlModel = new DTLExample();
-		sc.close();
-		try {
-			dtlModel.setTrainingDataset(loadData("files/"+filename,"arff"));
-			if (dtlModel.getTrainingDataset()!=null) {
-				dtlModel.trainModel();
-				System.out.println(dtlModel.getMyClassifier());
-				dtlModel.filterData();
-				dtlModel.selfTesting();
-				dtlModel.saveModel();	
-				dtlModel.testModel("files/"+filename);
-			} else {
-				System.out.println("file not found.");
+		boolean isStopped = false;
+		while (!isStopped) {
+			System.out.println("===========================");
+			printAllFiles();
+			System.out.println("Nama file dataset: ");
+			String filename = sc.next();
+			DTLExample dtlModel = new DTLExample();
+			try {
+				dtlModel.setTrainingDataset(loadData("files/"+filename));
+				if (dtlModel.getTrainingDataset()!=null) {
+					System.out.println("Indeks kelas di akhir? y/n");
+					String str = sc.next();
+					int classIndex = 0;
+					if (str.equals("y")) {
+						classIndex = dtlModel.getTrainingDataset().numAttributes() - 1;
+					} else {
+						System.out.print("Jadi di indeks ke? ");
+						classIndex = sc.nextInt();
+					}
+					if (dtlModel.getTrainingDataset().classIndex() == -1)
+			        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
+					System.out.println("=========================== TRAINING STARTED");
+					dtlModel.trainModel();
+					System.out.println(dtlModel.getMyClassifier());
+					System.out.println("=========================== TRAINING FINISHED");
+					
+					dtlModel.filterData();
+					dtlModel.selfTesting();
+					dtlModel.saveModel();	
+					dtlModel.testModel("files/"+filename);
+				} else {
+					System.out.println("file not found.");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+		sc.close();
+		
 	}
 	
 	public DTLExample() {
@@ -130,11 +150,11 @@ public class DTLExample {
 		this.setMyClassifier(cls);
 	}
 
-	public static Instances loadData(String filename, String type) throws Exception {
+	public static Instances loadData(String filename) throws Exception {
 		Instances dataTrain = null;
-		
 		if (isFileExist(filename)) {
-			if (type.equals("csv")) {
+			String fileType = filename.split("\\.")[1];
+			if (fileType.equals("csv")) {
 				CSVLoader loader = new CSVLoader();
 			    loader.setSource(new File(filename));
 			    dataTrain = loader.getDataSet();
@@ -143,13 +163,9 @@ public class DTLExample {
 					DataSource source = new DataSource(filename);	
 					dataTrain = source.getDataSet();
 				}
-			}
-			if (dataTrain!=null) {
-		        int lastIndex = dataTrain.numAttributes() - 1;
-		        if (dataTrain.classIndex() == -1)
-		        	dataTrain.setClassIndex(lastIndex);
-			}
+			}			
 		}
+		
 	    return dataTrain;
     }
 	
@@ -157,5 +173,17 @@ public class DTLExample {
 		File tmpDir = new File(filename);
 		return tmpDir.exists();
 	}
-	 
+	
+	public static void printAllFiles() { 
+		File folder = new File("files");
+		File[] listOfFiles = folder.listFiles();
+	
+	    for (int i = 0; i < listOfFiles.length; i++) {
+	      if (listOfFiles[i].isFile()) {
+	        System.out.println("- " + listOfFiles[i].getName());
+	      } else if (listOfFiles[i].isDirectory()) {
+	        System.out.println("Directory " + listOfFiles[i].getName());
+	      }
+	    }
+	}
 }
