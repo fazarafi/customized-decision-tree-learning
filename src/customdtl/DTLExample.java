@@ -28,7 +28,7 @@ public class DTLExample {
                     System.out.println("===========================");
                     DTLUtil.printAllFiles();
                     System.out.println("Nama file dataset: ");
-                    String filename = new String("iris.arff");
+                    String filename = new String("mushrooms.csv");
                     DTLExample dtlModel = new DTLExample();
 			
 				dtlModel.setTrainingDataset(loadData("files/"+filename));
