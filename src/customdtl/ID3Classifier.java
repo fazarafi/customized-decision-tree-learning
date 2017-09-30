@@ -51,15 +51,17 @@ public class ID3Classifier extends AbstractClassifier{
     @Override
     public void buildClassifier(Instances ins) throws Exception {
 //      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        // create roots
+        // create tree (root)
         tree = buildTree(ins);
     }
     
     public static int getClassIndex(Instance ins, DTLNode node) {
         //missing attribute
         if (node.isLeaf()) {
+            // BASIS
             return node.classIndex; // basis
         } else { // bukan daun
+            // REKURENS
             String val = ins.stringValue(node.attributeToCheck);
             int index = node.attributeValues.indexOf(val);
             DTLNode child = node.children.get(index);
