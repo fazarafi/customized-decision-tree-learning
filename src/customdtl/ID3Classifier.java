@@ -35,6 +35,7 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
                 // HITUNG IG TIAP POSSIBLE ATRIBUTE
                 node.calculateIg(ins);
                 node.attributeToCheck = node.possibleAttribute.get(node.getIndexBestAttribute());
+                System.out.println(node.attributeToCheck);
                 node.saveAttributeValues(ins);
                 System.out.println(node.attributeValues);
 
