@@ -41,32 +41,24 @@ public class DTLNode {
         possibleAttribute = new ArrayList<Attribute>();
         
     }
+        
+    public boolean isRoot(){
+        return parent == null;
+    }
     
-//    public String getClassName(){
-//        return className;
-//    }
-//    
-//    public void setClassName(String s){
-//        className = s;
-//    }
+    public boolean isLeaf(){
+        // return !(className.isEmpty());
+        return classIndex == -1;
+    }
     
-    // dapatkan list atribute yang mungkin
-    public void fillArrayPossibleAttribut(Instances ins){
-        if (parent == null) {
-            int jmlAtr = ins.numAttributes();
-            for (int i = 0; i < jmlAtr; i++) {
-                // masukin semua yg mungkin di instances-nya
-                possibleAttribute.add(ins.attribute(i));
-            }
-        } else { // ada parentnya
-            int jmlAtr = parent.possibleAttribute.size();
-            for (int i = 0; i < jmlAtr; i++) {
-                // masukin possible atribute parent, KECUALI atribute parentnya itu sndiri
-                if (!parent.possibleAttribute.get(i).equals(parent.attributeToCheck)) {
-                    possibleAttribute.add(parent.possibleAttribute.get(i));
-                }
-            }
+    // count the number of instance that has class index i
+    public int count(Instances ins, int i) {
+        int total = 0;
+        for (Instance singleIns : ins) {
+            if (singleIns.classIndex()==i)
+                total += 1;
         }
+        return total;
     }
     
     // fungsi bantuan untuk prosedur di bawahnya
@@ -101,42 +93,43 @@ public class DTLNode {
         entropy = calculateEntropyF(ins, classes);
     }
     
+    // dapatkan list atribute yang mungkin
+    public void fillArrayPossibleAttribut(Instances ins) {
+        if (parent == null) {
+            int jmlAtr = ins.numAttributes();
+            for (int i = 0; i < jmlAtr; i++) {
+                // masukin semua yg mungkin di instances-nya
+                possibleAttribute.add(ins.attribute(i));
+            }
+        } else { // ada parentnya
+            int jmlAtr = parent.possibleAttribute.size();
+            for (int i = 0; i < jmlAtr; i++) {
+                // masukin possible atribute parent, KECUALI atribute parentnya itu sndiri
+                if (!parent.possibleAttribute.get(i).equals(parent.attributeToCheck)) {
+                    possibleAttribute.add(parent.possibleAttribute.get(i));
+                }
+            }
+        }
+    }
+
+    
 //    public void calculateIG(){
 //        
 //    }
     
     // menyimpan parent dari node tersebut
     // (Root/akar tidak akan memanggil prosedur ini)
-    public void setParent(DTLNode parent){
-        
-    }
+//    public void setParent(DTLNode parent){
+//        
+//    }
     
     // bangkitkan anak dari node
     // don't forget to set parent in the end!!!!
-    public void addChild(DTLNode child){
-        
-    }
-    
-    public boolean isRoot(){
-        return parent == null;
-    }
-    
-    public boolean isLeaf(){
-//        return !(className.isEmpty());
-        return classIndex == -1;
-    }
+//    public void addChild(DTLNode child){
+//        
+//    }
     
 //    public void removeParent(){
 //        
 //    }
-    
-    // count the number of instance that has class index i
-    public int count(Instances ins, int i) {
-        int total = 0;
-        for (Instance singleIns : ins) {
-            if (singleIns.classIndex()==i)
-                total += 1;
-        }
-        return total;
-    }
 }
