@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
@@ -54,10 +55,10 @@ public class DatasetPreProcessor {
 	}
 	
 	public void calculateThreshold(int attIdx) {
-		Instances tempInst = new Instances(datasetInstances);
-		tempInst.sort(attIdx);
-		int classIdx = tempInst.classIndex();
-		int numInstances = tempInst.numInstances();
+		Instances sortedInst = new Instances(datasetInstances);
+		sortedInst.sort(attIdx);
+		int classIdx = sortedInst.classIndex();
+		int numInstances = sortedInst.numInstances();
 		double[] valueArray = new double[numInstances];  
 		double[] classArray = new double[numInstances];
 		
@@ -65,8 +66,8 @@ public class DatasetPreProcessor {
 		boolean first = true;
 		double prevValue = 0d;
 		for (int i=0; i<numInstances; i++) {
-			valueArray[i] = tempInst.instance(i).value(attIdx);
-			classArray[i] = tempInst.instance(i).value(classIdx);
+			valueArray[i] = sortedInst.instance(i).value(attIdx);
+			classArray[i] = sortedInst.instance(i).value(classIdx);
 			if (first) {
 				prevValue = classArray[0];
 				first = false;
@@ -78,55 +79,63 @@ public class DatasetPreProcessor {
 			}
 		}
 		
-//		System.out.println("atribut");
-//		for (int i=0; i<numInstances; i++) {
-//			System.out.print(i+">"+valueArray[i]+" ");	
-//		}
-//		
-//		System.out.println("");
-//		System.out.println("class");
-//		for (int i=0; i<numInstances; i++) {
-//			System.out.print(i+">"+classArray[i]+" ");	
-//		}
-//		System.out.println("");
-//		System.out.println(cutPointList);
+		System.out.println("atribut");
+		for (int i=0; i<numInstances; i++) {
+			System.out.print(i+">"+valueArray[i]+" ");	
+		}
+		
+		System.out.println("");
+		System.out.println("class");
+		for (int i=0; i<numInstances; i++) {
+			System.out.print(i+">"+classArray[i]+" ");	
+		}
+		System.out.println("");
+		System.out.println(cutPointList);
 		
 		int chosenCutPoint = 0;
 		double maxIG = 0d;
 		int counter = 0;
 		for (int cutPoint : cutPointList) {
-			if (counter>10) {
+			if (counter>2) {
 				break;
 			}
-			double cutPointIG = calculateIG(cutPoint);
+			double cutPointIG = calculateIG(cutPoint,sortedInst);
+			System.out.println(cutPoint+". "+cutPointIG);
 			if (cutPointIG > maxIG) {
 				maxIG = cutPointIG;
 				chosenCutPoint = cutPoint; 
 			}
 			counter++;
+			
 		}
 		threshold = chosenCutPoint; 
 	}
 	
-	
-	
-	
-	public double calculateIG(int cutPoint) {
-		double ig = 0d;
-		
-		
-		return 0d;
+	public static double calculateIG(int cutPoint, Instances sortedInst) {
+		double entAll = DTLUtil.calculateEntropyF(sortedInst);
+		double ig = entAll;
+		Instances[] splittedInst = splitInstances(cutPoint,sortedInst);
+		for (int i=0; i<2; i++) {
+			Attribute classAtt = splittedInst[i].attribute(splittedInst[i].classIndex());
+			ArrayList<String> arr_val = DTLUtil.possibleAttributeValue(splittedInst[i], classAtt);
+			System.out.println(arr_val);
+			
+			double entSubsetIns = DTLUtil.calculateEntropyF(splittedInst[i],arr_val);
+			ig -= (splittedInst[i].numInstances() / sortedInst.numInstances()) * entSubsetIns;	
+		}
+		return ig;
 	}
 	
-	public double calculateEntropy(int pop, int total) {
-		double entropy = 0d;
-		return -((pop/total)*log_b(2,pop/total))-(((total-pop)/total)*log_b(2,(total-pop)/total));
-	}
 	
-	public static double log_b(int basis, double num) {
-		return Math.log(num)/Math.log(basis);
+	public static Instances[] splitInstances(int cutPoint, Instances inst) {
+		Instances[] splittedInst = new Instances[2];
+		splittedInst[0] = new Instances(inst, 0, cutPoint+1);
+		splittedInst[1] = new Instances(inst, cutPoint+1, inst.numInstances()-cutPoint-1); 
+		return splittedInst; 
 	}
-	
 	
 	
 }
+
+
+
