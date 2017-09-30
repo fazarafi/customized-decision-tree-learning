@@ -65,7 +65,7 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
         try {
             //missing attribute
             if (node.isLeaf()) {
-                System.out.println("leaf");
+//                System.out.println("leaf");
                 // BASIS
                 return node.classIndex; // basis
             } else { // bukan daun
