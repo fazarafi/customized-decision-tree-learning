@@ -31,10 +31,25 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
                 // DAPATKAN ATRIBUT YANG MASIH MUNGKIN
                 node.fillArrayPossibleAttribut(ins);
                 
+                // CHECK APABILA ATRIBUT YANG MASIH MUNGKIN
+//                if (node.possibleAttribute.isEmpty()) {
+//                    node.classIndex = (int) ins.get(0).classValue();
+//                    int[] arr_class = DTLUtil.getClassesDataF(ins);
+//                    int max = 0;
+//                    for (int i=0;i<arr_class.length;i++){
+//                        if (arr_class[i]>arr_class[max])
+//                            max = i;
+//                    }
+//                    node.classIndex = max;
+//                } else {
+                
                 // HITUNG IG TIAP POSSIBLE ATRIBUTE
                 node.calculateIg(ins);
+//                System.out.println("atas, "+node.possibleAttribute+"     "+node.getIndexBestAttributeByIg());
                 node.attributeToCheck = node.possibleAttribute.get(node.getIndexBestAttributeByIg());
+//                System.out.println("bawah");
                 node.saveAttributeValues(ins);
+//                System.out.println(node.attributeValues);
 
                 // BANGKITKAN ANAK
         
@@ -45,6 +60,7 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
                     DTLNode childNode = buildTree(subsetIns, node);
                     node.children.add(childNode);
                 }
+                
             }
 
             return node;

@@ -40,11 +40,25 @@ public class C45Classifier extends ID3Classifier{
                 // DAPATKAN ATRIBUT YANG MASIH MUNGKIN
                 node.fillArrayPossibleAttribut(ins);
                 
+                // CHECK APABILA ATRIBUT YANG MASIH MUNGKIN
+                if (node.possibleAttribute.isEmpty()) {
+                    node.classIndex = (int) ins.get(0).classValue();
+                    int[] arr_class = DTLUtil.getClassesDataF(ins);
+                    int max = 0;
+                    for (int i=0;i<arr_class.length;i++){
+                        if (arr_class[i]>arr_class[max])
+                            max = i;
+                    }
+                    node.classIndex = max;
+                } else {
+                
                 // HITUNG IG TIAP POSSIBLE ATRIBUTE
                 node.calculateIg(ins);
                 node.calculateGainRatio(ins);
                 node.attributeToCheck = node.possibleAttribute.get(node.getIndexBestAttributeByGainRatio());
+//                  System.out.println("bawah");
                 node.saveAttributeValues(ins);
+//                System.out.println(node.attributeValues);
 
                 // BANGKITKAN ANAK
         
@@ -52,18 +66,20 @@ public class C45Classifier extends ID3Classifier{
                 for (String s : childString) {
                     Instances subsetIns = DTLUtil.filterInstances(ins, node.attributeToCheck, s);
 //                    System.out.println("ins = "+ins.numInstances()+", sub = "+subsetIns.numInstances());
-                    DTLNode childNode = this.buildTree(subsetIns, node);
+                    DTLNode childNode = buildTree(subsetIns, node);
                     node.children.add(childNode);
+                }
                 }
             }
 
             return node;
         } catch (Exception e) {
-            e.getStackTrace()[0].getLineNumber();
             System.out.println(e);
         }
         return null;
-    }    
+    }
+    
+//   
         
     @Override
     public double classifyInstance(Instance ins) {
