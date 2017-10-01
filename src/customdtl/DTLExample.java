@@ -80,7 +80,10 @@ public class DTLExample {
 					
 					// Weka ID3
 					System.out.println("=========================== TRAINING STARTED");
-					dtlModel.trainModel(1);
+//					dtlModel.trainModel(1);
+					Id3 a = new Id3();
+					a.buildClassifier(dtlModel.getTrainingDataset());
+					
 					System.out.println("=========================== TRAINING FINISHED");
 					dtlModel.crossValTesting();
 					

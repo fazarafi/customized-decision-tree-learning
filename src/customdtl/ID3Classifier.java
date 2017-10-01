@@ -33,7 +33,7 @@ public class ID3Classifier extends AbstractClassifier implements Serializable{
                 
                 // HITUNG IG TIAP POSSIBLE ATRIBUTE
                 node.calculateIg(ins);
-                node.attributeToCheck = node.possibleAttribute.get(node.getIndexBestAttribute());
+                node.attributeToCheck = node.possibleAttribute.get(node.getIndexBestAttributeByIg());
                 node.saveAttributeValues(ins);
 
                 // BANGKITKAN ANAK

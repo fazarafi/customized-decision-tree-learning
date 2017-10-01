@@ -91,16 +91,7 @@ public class DTLUtil {
 	}
 
 	public static double calculateGainRatio(Instances ins, Attribute att) {
-		double entAll = calculateEntropyF(ins);
-		double infGain = entAll;
-		ArrayList<String> arr_val = possibleAttributeValue(ins, att);
-
-		for (String s : arr_val) {
-			Instances subsetIns = filterInstances(ins, att, s);
-			double entSubsetIns = calculateEntropyF(subsetIns);
-			infGain -= ((double) subsetIns.numInstances() / (double) ins.numInstances()) * entSubsetIns;
-		}
-		return infGain / calculateSplitInfo(ins, att);
+		return calculateIgF(ins,att) / calculateSplitInfo(ins, att);
 	}
 
 	public static double calculateSplitInfo(Instances ins, Attribute att) {

@@ -8,21 +8,64 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 public class C45Classifier extends ID3Classifier{
-        public static Instances allIns;
-        public static DatasetPreProcessor dPP;
-        public double accuracy; //dapet dari model tree yang udah di training
+    public static Instances allIns;
+    public static DatasetPreProcessor dPP;
+    public double accuracy; //dapet dari model tree yang udah di training
 //        public double threshold;
-        public ArrayList<Rule> rules;
+    public ArrayList<Rule> rules;
         
+    @Override
+    public DTLNode buildTree(Instances ins, DTLNode newParent) {
+        try {
+            DTLNode node = new DTLNode(newParent);
+            if (isAllSame(ins)) { // jadikan node ini sebagai node daun!!
+                // BASIS
+                node.className = ins.get(0).toString(ins.classIndex());
+                node.classIndex = (int) ins.get(0).classValue();
+//                System.out.println("leaf");
+            } else {
+                // REKURENS
+
+                // rootNode.className = null; (ada di konstruktor)
+                // rootNode.classIndex = -1; (ada di konstruktor)
+                // HITUNG ENTROPY
+                node.getClassesData(ins);
+                node.calculateEntropy(ins);
+
+                // DAPATKAN ATRIBUT YANG MASIH MUNGKIN
+                node.fillArrayPossibleAttribut(ins);
                 
+                // HITUNG IG TIAP POSSIBLE ATRIBUTE
+                node.calculateIg(ins);
+                node.calculateGainRatio(ins);
+                node.attributeToCheck = node.possibleAttribute.get(node.getIndexBestAttributeByGainRatio());
+                node.saveAttributeValues(ins);
+
+                // BANGKITKAN ANAK
+        
+                ArrayList<String> childString = DTLUtil.possibleAttributeValue(ins, node.attributeToCheck);
+                for (String s : childString) {
+                    Instances subsetIns = DTLUtil.filterInstances(ins, node.attributeToCheck, s);
+//                    System.out.println("ins = "+ins.numInstances()+", sub = "+subsetIns.numInstances());
+                    DTLNode childNode = this.buildTree(subsetIns, node);
+                    node.children.add(childNode);
+                }
+            }
+
+            return node;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }    
+        
 	@Override
 	public void buildClassifier(Instances ins) throws Exception {
     //      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             // create tree (root)
             dPP = new DatasetPreProcessor(ins);
             allIns = ins;
-            tree = buildTree(ins, null);
-            System.out.println("DARI C45");
+            tree = this.buildTree(ins, null);
             rulePostPrunning(tree,allIns);
         }
         
