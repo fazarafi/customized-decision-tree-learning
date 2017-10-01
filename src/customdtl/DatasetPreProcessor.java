@@ -10,31 +10,40 @@ import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
 
 public class DatasetPreProcessor {
-	private Instances datasetInstances;
-	private double threshold;
+	private ArrayList<Integer> numericAttList = new ArrayList<>();
+	private Instances mainInst;
+	private double threshold[];
 	private Random randomizer;
 	
 	public static void main(String[] args) {
-		DatasetPreProcessor dsp = new DatasetPreProcessor("iris.arff");
-		dsp.calculateThreshold(0);
-		System.out.println(dsp.threshold);
-		
-	}
-	
-	public DatasetPreProcessor(String filename) {
 		try {
-			randomizer = new Random();
-			setDataset("files/"+filename);
+			DatasetPreProcessor dsp = new DatasetPreProcessor("iris.arff");
+			dsp.calcThresholdIfNominal();
+			for (double t : dsp.getThreshold()) {
+				System.out.println(t);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+
+	}
+	
+	public DatasetPreProcessor(String filename) throws Exception {
+		randomizer = new Random();
+		setDataset("files/"+filename);
+		threshold = new double[mainInst.numAttributes()];	
 	}
 	
 	public Instances getDatasetInstances() {
-		return datasetInstances;
+		return mainInst;
 	}
-
-	public double getThreshold() {
+	
+	public void setDatasetInstances(Instances newInst) {
+		mainInst = newInst;
+	}
+	
+	public double[] getThreshold() {
 		return threshold;
 	}
 
@@ -44,21 +53,31 @@ public class DatasetPreProcessor {
 			if (fileType.equals("csv")) {
 				CSVLoader loader = new CSVLoader();
 			    loader.setSource(new File(filename));
-			    datasetInstances = loader.getDataSet();
+			    mainInst = loader.getDataSet();
 			} else {
 				if (DataSource.isArff(filename)) {
 					DataSource source = new DataSource(filename);	
-					datasetInstances = source.getDataSet();
+					mainInst = source.getDataSet();
 				}
 			}			
 		}
-		int classIndex = datasetInstances.numAttributes() - 1;
-		if (datasetInstances.classIndex() == -1)
-			datasetInstances.setClassIndex(classIndex);
+		int classIndex = mainInst.numAttributes() - 1;
+		if (mainInst.classIndex() == -1)
+			mainInst.setClassIndex(classIndex);
+	}
+	
+	public void calcThresholdIfNominal() {
+		int numAtts = mainInst.numAttributes();
+		for (int i=0; i<numAtts; i++) {
+			if (i!=mainInst.classIndex() && mainInst.attribute(i).isNumeric()) {
+				numericAttList.add(i);
+				calculateThreshold(i);
+			}
+		}
 	}
 	
 	public void calculateThreshold(int attIdx) {
-		Instances sortedInst = new Instances(datasetInstances);
+		Instances sortedInst = new Instances(mainInst);
 		sortedInst.sort(attIdx);
 		int classIdx = sortedInst.classIndex();
 		int numInstances = sortedInst.numInstances();
@@ -80,31 +99,26 @@ public class DatasetPreProcessor {
 				}
 				prevValue = classArray[i];
 			}
+		}	
+		System.out.println("atribut");
+		for (int i=0; i<numInstances; i++) {
+			System.out.print(i+">"+valueArray[i]+" ");	
 		}
 		
-//		System.out.println("atribut");
-//		for (int i=0; i<numInstances; i++) {
-//			System.out.print(i+">"+valueArray[i]+" ");	
-//		}
-//		
-//		System.out.println("");
-//		System.out.println("class");
-//		for (int i=0; i<numInstances; i++) {
-//			System.out.print(i+">"+classArray[i]+" ");	
-//		}
-//		System.out.println("");
-//		System.out.println(cutPointList);
-		
+		System.out.println("");
+		System.out.println("class");
+		for (int i=0; i<numInstances; i++) {
+			System.out.print(i+">"+classArray[i]+" ");	
+		}
+		System.out.println("");
+		System.out.println(cutPointList);
+
 		int chosenCutPoint = 0;
 		double maxIG = 0d;
 		int counter = 0;
-		
-		
-        
 		while (counter<10 && !cutPointList.isEmpty()) {
 			int index = randomizer.nextInt(cutPointList.size());
 			double cutPointIG = calculateIG(cutPointList.get(index),sortedInst);
-//			System.out.println(cutPointList.get(index)+". "+cutPointIG);
 			if (cutPointIG > maxIG) {
 				maxIG = cutPointIG;
 				chosenCutPoint = cutPointList.get(index); 
@@ -112,8 +126,8 @@ public class DatasetPreProcessor {
 			cutPointList.remove(index); // memastikan angka random tidak berulang
 			counter++;
 		}
-		
-		threshold = chosenCutPoint; 
+		System.out.println(chosenCutPoint);
+		threshold[attIdx] = (valueArray[chosenCutPoint]+valueArray[chosenCutPoint+1])/2; 
 	}
 	
 	public static double calculateIG(int cutPoint, Instances sortedInst) {
@@ -127,7 +141,6 @@ public class DatasetPreProcessor {
 		return ig;
 	}
 	
-	
 	public static Instances[] splitInstances(int cutPoint, Instances inst) {
 		Instances[] splittedInst = new Instances[2];
 		splittedInst[0] = new Instances(inst, 0, cutPoint+1);
@@ -140,3 +153,15 @@ public class DatasetPreProcessor {
 
 
 
+//System.out.println("atribut");
+//for (int i=0; i<numInstances; i++) {
+//	System.out.print(i+">"+valueArray[i]+" ");	
+//}
+//
+//System.out.println("");
+//System.out.println("class");
+//for (int i=0; i<numInstances; i++) {
+//	System.out.print(i+">"+classArray[i]+" ");	
+//}
+//System.out.println("");
+//System.out.println(cutPointList);

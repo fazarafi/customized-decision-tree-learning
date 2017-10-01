@@ -25,42 +25,66 @@ public class DTLExample {
 		boolean isStopped = false;
 		while (!isStopped) {
             try {
-                    System.out.println("===========================");
-                    DTLUtil.printAllFiles();
-                    System.out.println("Nama file dataset: ");
-                    String filename = new String("breast-cancer.arff");
-                    DTLExample dtlModel = new DTLExample();
+                System.out.println("===========================");
+                DTLUtil.printAllFiles();
+                System.out.println("Nama file dataset: ");
+                String filename = new String("breast-cancer.arff");
+                DTLExample dtlModel = new DTLExample();
 			
 				dtlModel.setTrainingDataset(loadData("files/"+filename));
 				if (dtlModel.getTrainingDataset()!=null) {
-				System.out.println("Indeks kelas di akhir? y/n");
-				String str = new String("y");
-				int classIndex = 0;
-				if (str.equals("y")) {
-					classIndex = dtlModel.getTrainingDataset().numAttributes() - 1;
-				} else {
-					System.out.print("Jadi di indeks ke? ");
-					classIndex = 0;
-				}
-				if (dtlModel.getTrainingDataset().classIndex() == -1)
-		        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
-                    System.out.println("=========================== TRAINING STARTED");
-					dtlModel.trainModel();
-					System.out.println(dtlModel.getMyClassifier());
-					System.out.println("=========================== TRAINING FINISHED");
+					System.out.println("Indeks kelas di akhir? y/n");
+					String str = new String("y");
+					int classIndex = 0;
 					
-//					dtlModel.filterData();
-					dtlModel.selfTesting();
+					if (str.equals("y")) {
+						classIndex = dtlModel.getTrainingDataset().numAttributes() - 1;
+					} else {
+						System.out.print("Jadi di indeks ke? ");
+						classIndex = 0;
+					}
+					if (dtlModel.getTrainingDataset().classIndex() == -1) {
+			        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
+					}
+					
+					System.out.println("Load Model baru? (y/n)");
+					if (str.equals("y")) {
+						dtlModel.loadModel();
+						System.out.println("Model berhasil di-load!");
+					} else {
+						System.out.println("=========================== TRAINING STARTED");
+						dtlModel.trainModel();
+//						System.out.println(dtlModel.getMyClassifier());
+						System.out.println("=========================== TRAINING FINISHED");
+						System.out.println("Dataset tidak di-filter!");
+					}
+					
+	                System.out.println("Filter dataset dengan Resample? (y/n)");
+					if (str.equals("y")) {
+						dtlModel.filterData();
+						System.out.println("Dataset di-filter!");
+					} else {
+						System.out.println("Dataset tidak di-filter!");
+					}
+					
+					System.out.println("Tes model dengan 10-fold Cross Validation? (y/n)");
+					if (str.equals("y")) {
+						dtlModel.crossValTesting();
+						System.out.println("Dataset di-filter!");
+					} else {
+						System.out.println("Dataset tidak di-filter!");
+					}
+					
 					dtlModel.saveModel();	
 //					dtlModel.testModel("files/"+filename);
-//                                        System.out.println(dtlModel.getTrainingDataset().toString());
+//              	System.out.println(dtlModel.getTrainingDataset().toString());
 				} else {
 					System.out.println("file not found.");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-                isStopped = true;
+            isStopped = true;
 		}
 		sc.close();
 		
@@ -132,11 +156,15 @@ public class DTLExample {
 		}
 	}
 	
-	public void selfTesting() throws Exception {
+	public void crossValTesting() throws Exception {
 		Evaluation evalResult = new Evaluation(this.getTrainingDataset());
 		// Ten-Fold Cross Validation
 		evalResult.crossValidateModel(this.getMyClassifier(), this.getTrainingDataset(), 2, new Random(1));
 		System.out.println(evalResult.toSummaryString());
+	}
+	
+	public void percSplitTesting(int trainPerc) throws Exception {
+		
 	}
 	
 	public double classifyInputData(Instance input) throws Exception {
