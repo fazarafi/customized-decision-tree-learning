@@ -79,8 +79,8 @@ public class C45Classifier extends ID3Classifier{
         tree = this.buildTree(ins, null);
 //        System.out.println("aman build");
         rulePostPrunning(tree,allIns);
-        printAllRules();
-        System.out.println("build classifier selesai");
+//        printAllRules();
+//        System.out.println("build classifier selesai");
     }
         
         public void swap(int i, int j) {
@@ -115,8 +115,8 @@ public class C45Classifier extends ID3Classifier{
             ArrayList<Logic> al = new ArrayList<>();
             int idx = 0;
             convertToRule(node,al,idx);
-            System.out.println("convert ke rule");
-            printAllRules();
+//            System.out.println("convert ke rule");
+//            printAllRules();
             for(int i=0;i<rules.size();i++){
                 rules.get(i).prunning(accuracy,ins);
             }
@@ -152,18 +152,18 @@ public class C45Classifier extends ID3Classifier{
                     }
                 }
             }catch (Exception e) {
-                System.out.println(e);
-                System.out.println("exception di convert to rule");
+//                System.out.println(e);
+//                System.out.println("exception di convert to rule");
             }
         }
                 
 	public static int getClassIndexC45(Instance ins,ArrayList<Rule> rulesAfterPrunning) {
-            System.out.println("masuk classify");
+//            System.out.println("masuk classify");
             boolean isRuleMatch = false;
             int idxAns = -1;
             int ii = 0;
             while(!isRuleMatch && ii<rulesAfterPrunning.size()){
-                System.out.println("loop ke " + ii);
+//                System.out.println("loop ke " + ii);
                 ArrayList<Logic> logics = rulesAfterPrunning.get(ii).getRule();
                 boolean isAtrValid = true;
                 for(int i=0;i<logics.size();i++){
