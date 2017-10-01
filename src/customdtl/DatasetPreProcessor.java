@@ -32,21 +32,24 @@ public class DatasetPreProcessor {
             return ins;
         }
         
-	public static void main(String[] args) {
-		try {
-			DatasetPreProcessor dsp = new DatasetPreProcessor("weather.numeric.arff");
-			dsp.calcThresholdIfNominal();
-                        System.out.println(dsp.mainInst);
-                        System.out.println(dsp.changeAttrValue());
-			for (double t : dsp.getThreshold()) {
-				System.out.println(t);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-
-	}
+//	public static void main(String[] args) {
+//		try {
+//			DatasetPreProcessor dsp = new DatasetPreProcessor("mushrooms.csv");
+//			System.out.println(dsp.mainInst);
+//			System.out.println(DTLUtil.calculateGainRatio(dsp.mainInst, dsp.mainInst.attribute(1)));
+//			System.out.println(DTLUtil.calculateGainRatio(dsp.mainInst, dsp.mainInst.attribute(2)));
+//			System.out.println(DTLUtil.calculateGainRatio(dsp.mainInst, dsp.mainInst.attribute(3)));
+//
+//			dsp.calcThresholdIfNominal();
+//            System.out.println(dsp.mainInst);
+//            System.out.println(dsp.changeAttrValue());
+//			for (double t : dsp.getThreshold()) {
+//				System.out.println(t);
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	public DatasetPreProcessor(String filename) throws Exception {
 		randomizer = new Random();
