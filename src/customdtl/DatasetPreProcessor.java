@@ -44,43 +44,7 @@ public class DatasetPreProcessor {
 				System.out.println(t);
 			}
                         
-                        File file = new File("baru.arff");
-
-                        // creates the file
-                        file.createNewFile();
-
-                        // creates a FileWriter Object
-                        FileWriter writer = new FileWriter(file);
-                        // Writes the content to the file
-                        writer.write("@relation "+dsp.mainInst.relationName()+"\n");
-                        writer.write("\n");
-                        for (int i=0;i<dsp.mainInst.numAttributes();i++) {
-                            if (dsp.mainInst.attribute(i).isNumeric())
-                                writer.write("@attribute "+dsp.mainInst.attribute(i).name()+" {a,b}\n");
-                            else                
-                                writer.write(dsp.mainInst.attribute(i)+"\n");
-                        }
-                        writer.write("\n");
-                        writer.write("@data\n");
-                        for (Instance singleIns : dsp.mainInst) {
-                            for (int i=0;i<singleIns.numAttributes();i++) {
-                                // kalo numeric, ubah ke nominal
-                                if (dsp.threshold[i] == 0.0)
-                                    writer.write(singleIns.toString(i));
-                                else {
-                                    // bikin threshold
-                                    if (singleIns.value(i)<dsp.threshold[i])
-                                        writer.write("a");
-                                    else
-                                        writer.write("b");
-                                }
-                                if (i != singleIns.numAttributes()-1)
-                                    writer.write(",");
-                            }
-                            writer.write("\n");
-                        }
-                        writer.flush();
-                        writer.close();
+                        
                         
                         
 		} catch (Exception e) {
@@ -89,6 +53,7 @@ public class DatasetPreProcessor {
 
 
 	}
+        
         
 	public DatasetPreProcessor(String filename) throws Exception {
 		randomizer = new Random();
@@ -200,6 +165,49 @@ public class DatasetPreProcessor {
 		}
 		return ig;
 	}
+        
+        public void makeNominal(String filename) throws Exception {
+            File file = new File(filename);
+
+            // creates the file
+            file.createNewFile();
+
+            // creates a FileWriter Object
+            FileWriter writer = new FileWriter(file);
+            // Writes the content to the file
+            writer.write("@relation " + mainInst.relationName() + "\n");
+            writer.write("\n");
+            for (int i = 0; i < mainInst.numAttributes(); i++) {
+                if (mainInst.attribute(i).isNumeric()) {
+                    writer.write("@attribute " + mainInst.attribute(i).name() + " {a,b}\n");
+                } else {
+                    writer.write(mainInst.attribute(i) + "\n");
+                }
+            }
+            writer.write("\n");
+            writer.write("@data\n");
+            for (Instance singleIns : mainInst) {
+                for (int i = 0; i < singleIns.numAttributes(); i++) {
+                    // kalo numeric, ubah ke nominal
+                    if (threshold[i] == 0.0) {
+                        writer.write(singleIns.toString(i));
+                    } else {
+                        // bikin threshold
+                        if (singleIns.value(i) < threshold[i]) {
+                            writer.write("a");
+                        } else {
+                            writer.write("b");
+                        }
+                    }
+                    if (i != singleIns.numAttributes() - 1) {
+                        writer.write(",");
+                    }
+                }
+                writer.write("\n");
+            }
+            writer.flush();
+            writer.close();
+    }
 }
 
 
