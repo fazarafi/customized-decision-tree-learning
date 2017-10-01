@@ -10,7 +10,6 @@ import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
 
 public class DatasetPreProcessor {
-	private ArrayList<Integer> numericAttList = new ArrayList<>();
 	private Instances mainInst;
 	private double threshold[];
 	private Random randomizer;
@@ -32,6 +31,12 @@ public class DatasetPreProcessor {
 	public DatasetPreProcessor(String filename) throws Exception {
 		randomizer = new Random();
 		setDataset("files/"+filename);
+		threshold = new double[mainInst.numAttributes()];	
+	}
+	
+	public DatasetPreProcessor(Instances inputInst) throws Exception {
+		randomizer = new Random();
+		mainInst = new Instances(inputInst);
 		threshold = new double[mainInst.numAttributes()];	
 	}
 	
@@ -70,7 +75,6 @@ public class DatasetPreProcessor {
 		int numAtts = mainInst.numAttributes();
 		for (int i=0; i<numAtts; i++) {
 			if (i!=mainInst.classIndex() && mainInst.attribute(i).isNumeric()) {
-				numericAttList.add(i);
 				calculateThreshold(i);
 			}
 		}
