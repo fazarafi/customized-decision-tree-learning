@@ -36,8 +36,9 @@ public class DTLExample {
 				dtlModel.setTrainingDataset(loadData("files/"+filename));
 				if (dtlModel.getTrainingDataset()!=null) {
 					System.out.println("Indeks kelas di akhir? y/n");
-					String str = new String("n");
-					int classIndex = 0;
+					String str = sc.next();
+					System.out.print("Indeks ke? ");
+					int classIndex = sc.nextInt();
 					
 					if (str.equals("y")) {
 						classIndex = dtlModel.getTrainingDataset().numAttributes() - 1;
@@ -49,12 +50,21 @@ public class DTLExample {
 			        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
 					}
 					
-					System.out.println("Remove attributes? (y/n)");
+					System.out.println("Remove attribute? (y/n)");
 					str = sc.next();
 					if (str.equals("y")) {
 						System.out.print("Indeks Atribut ke? ");
 						String attId = sc.next();
 						dtlModel.removeAttribute(attId);
+					}
+					
+					System.out.println("Filter dataset dengan Resample? (y/n)");
+	                str = sc.next();
+					if (str.equals("y")) {
+						dtlModel.filterData();
+						System.out.println("Dataset di-filter!");
+					} else {
+						System.out.println("Dataset tidak di-filter!");
 					}
 					
 					System.out.println("Load Model baru? (y/n)");
@@ -68,16 +78,7 @@ public class DTLExample {
 						System.out.println("=========================== TRAINING FINISHED");
 					}
 					
-	                System.out.println("Filter dataset dengan Resample? (y/n)");
-	                str = sc.next();
-					if (str.equals("y")) {
-						dtlModel.filterData();
-						System.out.println("Dataset di-filter!");
-					} else {
-						System.out.println("Dataset tidak di-filter!");
-					}
-					
-					System.out.println("Tes model dengan 10-fold Cross Validation? (y/n)");
+	                System.out.println("Tes model dengan 10-fold Cross Validation? (y/n)");
 					str = sc.next();
 					if (str.equals("y")) {
 						dtlModel.crossValTesting();
