@@ -60,20 +60,6 @@ public class DTLUtil {
 		return ent;
 	}
 
-	public static double calculateEntropyForContF(Instances ins, ArrayList<String> arr_val) {
-		int[] arr_class = getClassesDataF(ins);
-		double ent = 0; // entropy
-		for (int i = 0; i < arr_class.length; i++) {
-			double prob = (double) arr_class[i] / (double) ins.numInstances();
-			ent += prob * Math.log(prob);
-		}
-		ent *= (double) -1 / Math.log(2d);
-		
-		return ent;
-	}
-	
-	
-	
 	// hitung information gain
 	public static double calculateIgF(Instances ins, Attribute att) {
 		double entAll = calculateEntropyF(ins);                
@@ -111,5 +97,11 @@ public class DTLUtil {
 
 		return newIns;
 	}
-
+	
+	public static Instances[] splitInstances(int cutPoint, Instances inst) {
+		Instances[] splittedInst = new Instances[2];
+		splittedInst[0] = new Instances(inst, 0, cutPoint+1);
+		splittedInst[1] = new Instances(inst, cutPoint+1, inst.numInstances()-cutPoint-1); 
+		return splittedInst; 
+	}
 }
