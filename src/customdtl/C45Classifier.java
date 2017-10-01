@@ -28,7 +28,7 @@ public class C45Classifier extends ID3Classifier{
             dPP = new DatasetPreProcessor(ins);
             allIns = ins;
             tree = buildTree(ins, null);
-//            System.out.println("DARI C45");
+            System.out.println("DARI C45");
             rulePostPrunning(tree,allIns);
         }
         
