@@ -13,17 +13,20 @@ public class DTLUtil {
 		return tmpDir.exists();
 	}
 
-	public static void printAllFiles() {
+	public static String[] printAllFiles() {
 		File folder = new File("files");
 		File[] listOfFiles = folder.listFiles();
-
+		String[] filenames = new String[listOfFiles.length+1];
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile()) {
-				System.out.println("- " + listOfFiles[i].getName());
+				System.out.println((i+1)+"- " + listOfFiles[i].getName());
+				filenames[i+1] = listOfFiles[i].getName();
 			} else if (listOfFiles[i].isDirectory()) {
 				System.out.println("Directory " + listOfFiles[i].getName());
 			}
 		}
+		
+		return filenames;
 	}
 
 	// count the number of instance that has class index i
