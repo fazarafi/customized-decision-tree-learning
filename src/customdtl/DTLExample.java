@@ -186,7 +186,7 @@ public class DTLExample {
 		switch (algo) {
 			case 1: {
 				System.out.println("Algoritma: ID3 WEKA");
-				DTL = new Id3();
+				DTL = new J48();
 				break;
 			}
 			case 3: {
