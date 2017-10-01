@@ -14,7 +14,13 @@ public class C45Classifier extends ID3Classifier{
 //        public double threshold;
         public ArrayList<Rule> rules;
         
-                
+        
+        @Override
+        public double classifyInstance(Instance ins) {
+            return (double) getClassIndexC45(ins, rules);
+        }
+    
+        
 	@Override
 	public void buildClassifier(Instances ins) throws Exception {
     //      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -74,9 +80,10 @@ public class C45Classifier extends ID3Classifier{
                     for(int i=0;i<currentIdx;i++){
                         Logic ll = al.get(i);
                         Logic newl = new Logic(ll.value,ll.attribute);
-                        r.addLogic(ll);
+                        r.addLogic(newl);
                     }
-                    r.getValueClass();
+                    r.setValueClass(allIns.attribute(allIns.classIndex()).value(node.classIndex));
+                    r.setIdxClass(node.classIndex);
                     rules.add(r);
 //                  r.setValueClass(node.classIndex);
                 } else { // bukan daun
@@ -92,43 +99,35 @@ public class C45Classifier extends ID3Classifier{
             }
         }
                 
-	//override
-	public static int getClassIndex(Instance ins, DTLNode node) {
-            try {
-                //missing attribute
-                if (node.isLeaf()) {
-    //                System.out.println("leaf");
-                    // BASIS
-                    return node.classIndex; // basis
-                } else { // bukan daun
-                    // REKURENS
-                    Attribute a = node.attributeToCheck;
-    //                System.out.println(a);
-                    String val = ins.stringValue(a);
-    //                System.out.println(val);
-    //                System.out.println(node.attributeValues);
-                    int index = node.attributeValues.indexOf(val);
-                    // if not found (attribute doesn't exist in data train)
-                    if (index == -1) {
-                        System.out.println("oioi");
-                        // let's just use most common value
-                        int[] arr_class = DTLUtil.getClassesDataF(allIns);
-                        //find max
-                        int max = 0;
-                        for (int i=0;i<arr_class.length;i++){
-                            if (arr_class[i]>arr_class[max])
-                                max = i;
-                        }
-                        return max;
-    //                System.out.println(index);
+	public static int getClassIndexC45(Instance ins,ArrayList<Rule> rulesAfterPrunning) {
+            boolean isRuleMatch = false;
+            int idxAns = -1;
+            int ii = 0;
+            while(!isRuleMatch && ii<rulesAfterPrunning.size()){
+                ArrayList<Logic> logics = rulesAfterPrunning.get(ii).getRule();
+                boolean isAtrValid = true;
+                for(int i=0;i<logics.size();i++){
+                    String s = ins.toString((Attribute)logics.get(i).attribute); //dapetin ins value dari atribut di logic
+                    if (!s.equals(logics.get(i).value)){ //bandingin value di ins sama di logic sesuai atribute
+                        isAtrValid = false;
                     }
-                    DTLNode child = node.children.get(index);
-    //                System.out.println("check");
-                    return getClassIndex(ins, child);
                 }
-            } catch (Exception e) {
-                System.out.println(e);
+                if(isAtrValid){
+                    isRuleMatch = true;
+                    idxAns = rulesAfterPrunning.get(ii).getIdxClass();
+                }
+                ii++;
             }
-            return 0;
+            if(isRuleMatch){
+                return idxAns;
+            }else{
+                int[] arr_class = DTLUtil.getClassesDataF(allIns);
+                int max = 0;
+                for (int i=0;i<arr_class.length;i++){
+                    if (arr_class[i]>arr_class[max])
+                        max = i;
+                }
+                return max;
+            }
         }
 }

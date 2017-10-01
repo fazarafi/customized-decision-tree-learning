@@ -18,6 +18,7 @@ public class Rule{
     private double akurasi;
     private ArrayList<Logic> logics;
     private String valueClass;
+    private int idxClass;
     
     public Rule(ArrayList<Logic> l,String val){
         for(int i=0;i<l.size();i++){
@@ -25,6 +26,14 @@ public class Rule{
             logics.add(ll);
         }
         valueClass = val;
+    }
+    
+    public void setIdxClass(int i){
+        idxClass = i;
+    }
+    
+    public int getIdxClass(){
+        return idxClass;
     }
     
     public Rule(Rule r) {
@@ -38,6 +47,10 @@ public class Rule{
     
     public Rule(){
     
+    }
+    
+    public ArrayList<Logic> getRule(){
+        return logics;
     }
     
     public double getAccuration(){
