@@ -6,6 +6,7 @@
 *.gz
 *.iso
 *.jar
+!weka.jar
 *.rar
 *.tar
 *.zip
