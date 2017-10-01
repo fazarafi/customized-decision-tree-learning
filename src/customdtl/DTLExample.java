@@ -97,10 +97,10 @@ public class DTLExample {
 					dtlModel.crossValTesting();
 					
 					// myC45
-//					System.out.println("=========================== TRAINING STARTED");
-//					dtlModel.trainModel(4);
-//					System.out.println("=========================== TRAINING FINISHED");
-//					dtlModel.crossValTesting();
+					System.out.println("=========================== TRAINING STARTED");
+					dtlModel.trainModel(4);
+					System.out.println("=========================== TRAINING FINISHED");
+					dtlModel.crossValTesting();
 					
 					System.out.println("Tes model dengan 10-fold Cross Validation? (y/n)");
 					str = sc.next();
@@ -206,10 +206,10 @@ public class DTLExample {
 				break;
 			}
 		}
-//                DatasetPreProcessor dPP = new DatasetPreProcessor(this.getTrainingDataset());
-//                dPP.makeNominal("coba.arff");
-//                DatasetPreProcessor a = new DatasetPreProcessor("coba.arff");
-//                this.setTrainingDataset(a.getDatasetInstances());
+                DatasetPreProcessor dPP = new DatasetPreProcessor(this.getTrainingDataset());
+                dPP.makeNominal("coba.arff");
+                DatasetPreProcessor a = new DatasetPreProcessor("coba.arff");
+                this.setTrainingDataset(a.getDatasetInstances());
                 DTL.buildClassifier(this.getTrainingDataset());
 		this.setMyClassifier(DTL);
 	}
