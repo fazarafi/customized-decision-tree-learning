@@ -34,7 +34,6 @@ public class DTLExample {
                 System.out.println("Nama file dataset: mushrooms.csv");
                 String filename = new String("mushrooms.csv");
                 DTLExample dtlModel = new DTLExample();
-			
 				dtlModel.setTrainingDataset(loadData("files/"+filename));
 				if (dtlModel.getTrainingDataset()!=null) {
 					System.out.println("Indeks kelas di akhir? y/n");

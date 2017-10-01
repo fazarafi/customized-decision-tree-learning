@@ -7,12 +7,15 @@ import weka.core.Instances;
 
 public class C45Classifier extends ID3Classifier {
         public static Instances allIns;
-    
+        public static DatasetPreProcessor dPP;
+        
         public void buildClassifier(Instances ins) throws Exception {
     //      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             // create tree (root)
+        	dPP = new DatasetPreProcessor(ins);
             allIns = ins;
             tree = buildTree(ins, null);
+            System.out.println("DARI C45");
         }
         
 	// override

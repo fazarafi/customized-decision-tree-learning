@@ -14,19 +14,19 @@ public class DatasetPreProcessor {
 	private double threshold[];
 	private Random randomizer;
 	
-	public static void main(String[] args) {
-		try {
-			DatasetPreProcessor dsp = new DatasetPreProcessor("iris.arff");
-			dsp.calcThresholdIfNominal();
-			for (double t : dsp.getThreshold()) {
-				System.out.println(t);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-
-	}
+//	public static void main(String[] args) {
+//		try {
+//			DatasetPreProcessor dsp = new DatasetPreProcessor("iris.arff");
+//			dsp.calcThresholdIfNominal();
+//			for (double t : dsp.getThreshold()) {
+//				System.out.println(t);
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//
+//	}
 	
 	public DatasetPreProcessor(String filename) throws Exception {
 		randomizer = new Random();
