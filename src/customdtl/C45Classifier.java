@@ -4,6 +4,7 @@ import static customdtl.ID3Classifier.getClassIndex;
 import java.util.ArrayList;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Attribute;
+import weka.core.Instance;
 import weka.core.Instances;
 
 public class C45Classifier extends ID3Classifier{
@@ -11,7 +12,7 @@ public class C45Classifier extends ID3Classifier{
         public static DatasetPreProcessor dPP;
         public double accuracy; //dapet dari model tree yang udah di training
 //        public double threshold;
-        ArrayList<Rule> rules;
+        public ArrayList<Rule> rules;
         
                 
 	@Override
@@ -21,14 +22,22 @@ public class C45Classifier extends ID3Classifier{
             dPP = new DatasetPreProcessor(ins);
             allIns = ins;
             tree = buildTree(ins, null);
-            System.out.println("DARI C45");
+//            System.out.println("DARI C45");
+            rulePostPrunning(tree,allIns);
+        }
+        
+        public void swap(int i, int j) {
+            Rule temp1 = new Rule(rules.get(i));
+            Rule temp2 = new Rule(rules.get(j));
+            rules.set(i, temp2);
+            rules.set(j, temp1);
         }
         
 //        public void reducedErrorPrunning(){
 //            
 //        }
         
-        public private qSortRules(int kiri,int kanan){
+        public void qSortRules(int kiri,int kanan){
             int i,div;
             if(kiri<kanan){
                 double accleft = rules.get(kiri).getAccuration();
@@ -45,7 +54,7 @@ public class C45Classifier extends ID3Classifier{
             }
         }
         
-        public void rulePostPrunning(DTLNode node,Instances ins){
+        public void rulePostPrunning(DTLNode node,Instances ins) throws Exception {
             ArrayList<Logic> al = new ArrayList<Logic>();
             int idx = 0;
             convertToRule(node,al,idx);
@@ -55,25 +64,25 @@ public class C45Classifier extends ID3Classifier{
             qSortRules(0,0);
         }
         
-        public void convertToRule(DTLNode node,ArrayList<Logic> al,int currentIdx){ 
+        public void convertToRule(DTLNode node,ArrayList<Logic> al,int currentIdx) throws Exception{ 
             // nilai current index awal =0 ,class al sudah di create sebelum dipanggil rekursif 
             
             try {
             //missing attribute
                 if (node.isLeaf()) {
-                    Rule r;
+                    Rule r = new Rule();
                     for(int i=0;i<currentIdx;i++){
                         Logic ll = al.get(i);
-                        Logic newl = Logic(ll.value,ll.attribute);
+                        Logic newl = new Logic(ll.value,ll.attribute);
                         r.addLogic(ll);
                     }
-                    r.getValueClass()
+                    r.getValueClass();
                     rules.add(r);
 //                  r.setValueClass(node.classIndex);
                 } else { // bukan daun
                     currentIdx++;
                     for(int i=0;i<node.children.size();i++){
-                        Logic l = new Logic(node.attributeValues.get(i),node.attributeToCheck)
+                        Logic l = new Logic(node.attributeValues.get(i),node.attributeToCheck);
                         al.add(currentIdx,l);
                         convertToRule(node.children.get(i),al,currentIdx);
                     }
@@ -83,9 +92,7 @@ public class C45Classifier extends ID3Classifier{
             }
         }
                 
-        
-        
-	// override
+	//override
 	public static int getClassIndex(Instance ins, DTLNode node) {
             try {
                 //missing attribute
@@ -122,5 +129,6 @@ public class C45Classifier extends ID3Classifier{
             } catch (Exception e) {
                 System.out.println(e);
             }
+            return 0;
         }
 }

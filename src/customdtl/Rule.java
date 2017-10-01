@@ -14,11 +14,12 @@ import weka.core.Instances;
  *
  * @author adesu
  */
-public class Rule implements Comparable<>{
+public class Rule{
     private double akurasi;
     private ArrayList<Logic> logics;
     private String valueClass;
-    public Rule(ArrayList<Logic> l,string val){
+    
+    public Rule(ArrayList<Logic> l,String val){
         for(int i=0;i<l.size();i++){
             Logic ll = new Logic(l.get(i).value,l.get(i).attribute);
             logics.add(ll);
@@ -26,11 +27,21 @@ public class Rule implements Comparable<>{
         valueClass = val;
     }
     
+    public Rule(Rule r) {
+        this.akurasi = r.akurasi;
+        for(int i=0;i<r.logics.size();i++){
+            Logic ll = new Logic(r.logics.get(i).value,r.logics.get(i).attribute);
+            logics.add(ll);
+        }
+        this.valueClass = r.valueClass;
+    }
+    
     public Rule(){
     
     }
     
     public double getAccuration(){
+        /* WARNING Sebelum Panggil ini pastikan calculateAccuration dulu */
         return akurasi;
     }
     
@@ -40,8 +51,8 @@ public class Rule implements Comparable<>{
         for (Instance ins:validate){
             boolean isAtrValid = true;
             for(int i=0;i<logics.size();i++){
-                String s = ins.toString((Attribute)logics[i].attribute); //dapetin ins value dari atribut di logic
-                if (!s.equals(logics[i].value)){ //bandingin value di ins sama di logic sesuai atribute
+                String s = ins.toString((Attribute)logics.get(i).attribute); //dapetin ins value dari atribut di logic
+                if (!s.equals(logics.get(i).value)){ //bandingin value di ins sama di logic sesuai atribute
                     isAtrValid = false;
                 }
             }
@@ -104,5 +115,15 @@ public class Rule implements Comparable<>{
             Logic l = deleteLogic(idxDeleted);
             calculateAccuration(ins);
         }
+    }
+    
+    public void printRule(){
+        for(int i=0;i<logics.size();i++){
+            if(i>0){
+                System.out.print(" n ");
+            }
+            System.out.print("( " + logics.get(i).attribute + " = " + logics.get(i).value + " )");
+        }
+        System.out.println();
     }
 }
