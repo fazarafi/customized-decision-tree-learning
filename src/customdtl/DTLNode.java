@@ -27,6 +27,8 @@ public class DTLNode implements Serializable{
     public ArrayList<Attribute> possibleAttribute; // atribute yang masih tersisa
     
     public ArrayList<Double> ig; // ig dari atribute yang mungkin, indeks sama dengan indeks possible atribute
+    public ArrayList<Double> gainRatio; // GainRatio dari atribute yang mungkin, indeks sama dengan indeks possible atribute
+    
     public ArrayList<DTLNode> children;
     
     public ArrayList<String> attributeValues; // value yang mungkin dari attribute
@@ -40,6 +42,7 @@ public class DTLNode implements Serializable{
         attributeToCheck = null;
         possibleAttribute = new ArrayList<>();
         ig = new ArrayList<>();
+        gainRatio = new ArrayList<>();
         children = new ArrayList<>();
         attributeValues = new ArrayList<>();
     }
@@ -95,18 +98,36 @@ public class DTLNode implements Serializable{
         }
     }
    
-    // isi array of information gain
+ // isi array of information gain
     public void calculateIg(Instances ins) throws Exception {
         for (Attribute att : possibleAttribute) {
             ig.add(new Double(DTLUtil.calculateIgF(ins, att)));
         }
     }
     
-    // cari index attribute dengan ig max
-    public int getIndexBestAttribute() throws Exception {
+    // isi array of information gain
+    public void calculateGainRatio(Instances ins) throws Exception {
+        for (Attribute att : possibleAttribute) {
+            ig.add(new Double(DTLUtil.calculateGainRatio(ins, att)));
+        }
+    }
+    
+ // cari index attribute dengan ig max
+    public int getIndexBestAttributeByIg() throws Exception {
         int index = 0;
         for (int i=0;i<ig.size();i++) {
             if (ig.get(i) > ig.get(index))
+                index = i;
+        }
+        
+        return index;
+    }
+    
+ // cari index attribute dengan ig max
+    public int getIndexBestAttributeByGainRatio() throws Exception {
+        int index = 0;
+        for (int i=0;i<gainRatio.size();i++) {
+            if (gainRatio.get(i) > gainRatio.get(index))
                 index = i;
         }
         

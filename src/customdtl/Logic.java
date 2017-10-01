@@ -11,8 +11,7 @@ import weka.core.Attribute;
  *
  * @author adesu
  */
-public class Logic {
-    
+public class Logic {  
     public String value;
     public Attribute attribute;
     public Logic(String val,Attribute at){

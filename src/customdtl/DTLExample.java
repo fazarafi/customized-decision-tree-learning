@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.trees.Id3;
 import weka.classifiers.trees.J48;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -30,14 +31,16 @@ public class DTLExample {
 		while (!isStopped) {
             try {
                 System.out.println("===============================");
-                DTLUtil.printAllFiles();
-                System.out.println("Nama file dataset: mushrooms.csv");
-                String filename = new String("mushrooms.csv");
+                String[] filenames = DTLUtil.printAllFiles();
+                System.out.print("pilihan file dataset: ");
+                int fileChosen = sc.nextInt();
+                String filename = filenames[fileChosen];
+                System.out.println("File dataset: "+filename);
                 DTLExample dtlModel = new DTLExample();
 				dtlModel.setTrainingDataset(loadData("files/"+filename));
 				if (dtlModel.getTrainingDataset()!=null) {
 					System.out.println("Indeks kelas di akhir? y/n");
-					String str = new String("");
+					String str = sc.next();
 					int classIndex;
 					
 					if (str.equals("y")) {
@@ -67,9 +70,40 @@ public class DTLExample {
 						System.out.println("Dataset tidak di-filter!");
 					}
 					
+					System.out.println("Pilihan Algoritma Pembelajaran: ");
+					System.out.println("1. Weka ID3 ");
+					System.out.println("2. Weka C45 ");
+					System.out.println("3. myID3 ");
+					System.out.println("4. myC45 ");
+					System.out.print("Pilihan anda: ");
+					int algo = sc.nextInt();
+					
+					// Weka ID3
 					System.out.println("=========================== TRAINING STARTED");
-					dtlModel.trainModel();
+//					dtlModel.trainModel(1);
+					Id3 a = new Id3();
+					a.buildClassifier(dtlModel.getTrainingDataset());
+					
 					System.out.println("=========================== TRAINING FINISHED");
+					dtlModel.crossValTesting();
+					
+					// Weka C45
+					System.out.println("=========================== TRAINING STARTED");
+					dtlModel.trainModel(2);
+					System.out.println("=========================== TRAINING FINISHED");
+					dtlModel.crossValTesting();
+					
+					// myID3
+					System.out.println("=========================== TRAINING STARTED");
+					dtlModel.trainModel(3);
+					System.out.println("=========================== TRAINING FINISHED");
+					dtlModel.crossValTesting();
+					
+					// myC45
+					System.out.println("=========================== TRAINING STARTED");
+					dtlModel.trainModel(4);
+					System.out.println("=========================== TRAINING FINISHED");
+					dtlModel.crossValTesting();
 					
 					System.out.println("Tes model dengan 10-fold Cross Validation? (y/n)");
 					str = sc.next();
@@ -150,8 +184,31 @@ public class DTLExample {
 		this.trainingDataset = trainingDataset;
 	}
 	
-	public void trainModel() throws Exception {
-		C45Classifier DTL = new C45Classifier();
+	public void trainModel(int algo) throws Exception {
+		Classifier DTL;
+		switch (algo) {
+			case 1: {
+				System.out.println("Algoritma: ID3 WEKA");
+				DTL = new J48();
+				break;
+			}
+			case 3: {
+				System.out.println("Algoritma: myID3");
+				DTL = new ID3Classifier();
+				break;
+			}
+			case 4: {
+				System.out.println("Algoritma: myC4.5");
+				DTL = new C45Classifier();
+				break;
+			}
+			case 2:
+			default: {
+				System.out.println("Algoritma: C4.5 WEKA (J48)");
+				DTL = new J48();
+				break;
+			}
+		}
 		DTL.buildClassifier(this.getTrainingDataset());
 		this.setMyClassifier(DTL);
 	}
