@@ -1,22 +1,89 @@
 package customdtl;
 
+import static customdtl.ID3Classifier.getClassIndex;
+import java.util.ArrayList;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Attribute;
-import weka.core.Instance;
 import weka.core.Instances;
 
-public class C45Classifier extends ID3Classifier {
+public class C45Classifier extends ID3Classifier{
         public static Instances allIns;
         public static DatasetPreProcessor dPP;
+        public double accuracy; //dapet dari model tree yang udah di training
+//        public double threshold;
+        ArrayList<Rule> rules;
         
-        public void buildClassifier(Instances ins) throws Exception {
+                
+	@Override
+	public void buildClassifier(Instances ins) throws Exception {
     //      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             // create tree (root)
-        	dPP = new DatasetPreProcessor(ins);
+            dPP = new DatasetPreProcessor(ins);
             allIns = ins;
             tree = buildTree(ins, null);
 //            System.out.println("DARI C45");
         }
+        
+//        public void reducedErrorPrunning(){
+//            
+//        }
+        
+        public private qSortRules(int kiri,int kanan){
+            int i,div;
+            if(kiri<kanan){
+                double accleft = rules.get(kiri).getAccuration();
+                div = kiri;
+                for(i=kiri+1;i<kanan;i++){
+                    if(rules.get(i).getAccuration()<=accleft){
+                        div++;
+                        swap(div,i);
+                    }
+                }
+                swap(kiri,div);
+                qSortRules(kiri,div);            
+                qSortRules(div+1,kanan);
+            }
+        }
+        
+        public void rulePostPrunning(DTLNode node,Instances ins){
+            ArrayList<Logic> al = new ArrayList<Logic>();
+            int idx = 0;
+            convertToRule(node,al,idx);
+            for(int i=0;i<al.size();i++){
+                rules.get(i).prunning(accuracy,ins);
+            }
+            qSortRules(0,0);
+        }
+        
+        public void convertToRule(DTLNode node,ArrayList<Logic> al,int currentIdx){ 
+            // nilai current index awal =0 ,class al sudah di create sebelum dipanggil rekursif 
+            
+            try {
+            //missing attribute
+                if (node.isLeaf()) {
+                    Rule r;
+                    for(int i=0;i<currentIdx;i++){
+                        Logic ll = al.get(i);
+                        Logic newl = Logic(ll.value,ll.attribute);
+                        r.addLogic(ll);
+                    }
+                    r.getValueClass()
+                    rules.add(r);
+//                  r.setValueClass(node.classIndex);
+                } else { // bukan daun
+                    currentIdx++;
+                    for(int i=0;i<node.children.size();i++){
+                        Logic l = new Logic(node.attributeValues.get(i),node.attributeToCheck)
+                        al.add(currentIdx,l);
+                        convertToRule(node.children.get(i),al,currentIdx);
+                    }
+                }
+            }catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+                
+        
         
 	// override
 	public static int getClassIndex(Instance ins, DTLNode node) {
@@ -55,7 +122,5 @@ public class C45Classifier extends ID3Classifier {
             } catch (Exception e) {
                 System.out.println(e);
             }
-            return 0;
         }
-
 }
