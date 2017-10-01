@@ -97,5 +97,11 @@ public class DTLUtil {
 
 		return newIns;
 	}
-
+	
+	public static Instances[] splitInstances(int cutPoint, Instances inst) {
+		Instances[] splittedInst = new Instances[2];
+		splittedInst[0] = new Instances(inst, 0, cutPoint+1);
+		splittedInst[1] = new Instances(inst, cutPoint+1, inst.numInstances()-cutPoint-1); 
+		return splittedInst; 
+	}
 }

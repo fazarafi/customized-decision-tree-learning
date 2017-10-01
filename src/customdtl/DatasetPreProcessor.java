@@ -133,22 +133,13 @@ public class DatasetPreProcessor {
 	public static double calculateIG(int cutPoint, Instances sortedInst) {
 		double entAll = DTLUtil.calculateEntropyF(sortedInst);
 		double ig = entAll;
-		Instances[] splittedInst = splitInstances(cutPoint,sortedInst);
+		Instances[] splittedInst = DTLUtil.splitInstances(cutPoint,sortedInst);
 		for (int i=0; i<2; i++) {
 			double entSubsetIns = DTLUtil.calculateEntropyF(splittedInst[i]);
 			ig -= ((double) splittedInst[i].numInstances() / (double)sortedInst.numInstances()) * entSubsetIns;	
 		}
 		return ig;
 	}
-	
-	public static Instances[] splitInstances(int cutPoint, Instances inst) {
-		Instances[] splittedInst = new Instances[2];
-		splittedInst[0] = new Instances(inst, 0, cutPoint+1);
-		splittedInst[1] = new Instances(inst, cutPoint+1, inst.numInstances()-cutPoint-1); 
-		return splittedInst; 
-	}
-	
-	
 }
 
 

@@ -19,13 +19,15 @@ import weka.filters.unsupervised.attribute.Remove;
 public class DTLExample {
 	private Classifier myClassifier;
 	private Instances trainingDataset;
+	private static Scanner sc = new Scanner(System.in);
+	
 		
 	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
 		boolean isStopped = false;
 		while (!isStopped) {
             try {
-                System.out.println("===========================");
+                System.out.println("===============================");
+                
                 DTLUtil.printAllFiles();
                 System.out.println("Nama file dataset: ");
                 String filename = new String("breast-cancer.arff");
@@ -47,7 +49,17 @@ public class DTLExample {
 			        	dtlModel.getTrainingDataset().setClassIndex(classIndex);
 					}
 					
+					System.out.println("Remove missing attributes? (y/n)");
+					str = sc.next();
+					if (str.equals("y")) {
+//						dtlModel.removeAttribute(attributeId);
+						System.out.println("Dataset di-filter!");
+					} else {
+						System.out.println("Dataset tidak di-filter!");
+					}
+					
 					System.out.println("Load Model baru? (y/n)");
+					str = sc.next();
 					if (str.equals("y")) {
 						dtlModel.loadModel();
 						System.out.println("Model berhasil di-load!");
@@ -60,6 +72,7 @@ public class DTLExample {
 					}
 					
 	                System.out.println("Filter dataset dengan Resample? (y/n)");
+	                str = sc.next();
 					if (str.equals("y")) {
 						dtlModel.filterData();
 						System.out.println("Dataset di-filter!");
@@ -68,14 +81,24 @@ public class DTLExample {
 					}
 					
 					System.out.println("Tes model dengan 10-fold Cross Validation? (y/n)");
+					str = sc.next();
 					if (str.equals("y")) {
 						dtlModel.crossValTesting();
-						System.out.println("Dataset di-filter!");
-					} else {
-						System.out.println("Dataset tidak di-filter!");
 					}
 					
-					dtlModel.saveModel();	
+					System.out.println("Tes model dengan train-test Percentage? (y/n)");
+					str = sc.next();
+					if (str.equals("y")) {
+						System.out.println("Berapa persen? (y/n)");
+						int trainPerc = sc.nextInt();
+						dtlModel.percSplitTesting(trainPerc);
+					}
+					
+					System.out.println("Save Model? (y/n)");
+					str = sc.next();
+					if (str.equals("y")) {
+						dtlModel.saveModel();
+					}
 //					dtlModel.testModel("files/"+filename);
 //              	System.out.println(dtlModel.getTrainingDataset().toString());
 				} else {
@@ -139,17 +162,16 @@ public class DTLExample {
 	public void testModel(String filename) throws Exception {
 		if (DTLUtil.isFileExist(filename) && DataSource.isArff(filename)) {
 			DataSource source = new DataSource(filename);
-			int lastIndex = this.getTrainingDataset().classIndex();
+			int classIdx = this.getTrainingDataset().classIndex();
 			int correctClass = 0;
-	        
 			Instances test = source.getDataSet();
-	        test.setClassIndex(lastIndex);
+	        test.setClassIndex(classIdx);
 	        
 	        for(int i=0; i<test.numInstances(); i++) {   
 	            double index = this.getMyClassifier().classifyInstance(test.instance(i));
 	            String className = this.getTrainingDataset().
-	            		attribute(lastIndex).value((int)index);
-	            if (className.equals(test.instance(i).toString(lastIndex)))
+	            		attribute(classIdx).value((int)index);
+	            if (className.equals(test.instance(i).toString(classIdx)))
 	            	correctClass++;
 	        }
 	        System.out.println("Akurasi: "+(double) correctClass/test.numInstances()*100+" %");
@@ -164,7 +186,23 @@ public class DTLExample {
 	}
 	
 	public void percSplitTesting(int trainPerc) throws Exception {
+		Instances[] splittedInst =  DTLUtil.splitInstances(
+				(trainPerc/100)*trainingDataset.numInstances(), trainingDataset);
+		// Training data
+		Classifier cls = new ID3Classifier();
+		cls.buildClassifier(splittedInst[0]);
 		
+		// Testing 
+		int classIdx = splittedInst[0].classIndex();
+		int correctClass = 0;
+		for(int i=0; i<splittedInst[1].numInstances(); i++) {   
+            double index = this.getMyClassifier().classifyInstance(splittedInst[1].instance(i));
+            String className = this.getTrainingDataset().
+            		attribute(classIdx).value((int)index);
+            if (className.equals(splittedInst[1].instance(i).toString(classIdx)))
+            	correctClass++;
+        }
+        System.out.println("Akurasi: "+(double) correctClass/splittedInst[1].numInstances()*100+" %");
 	}
 	
 	public double classifyInputData(Instance input) throws Exception {
