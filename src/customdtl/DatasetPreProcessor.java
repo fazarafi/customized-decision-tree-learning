@@ -1,6 +1,7 @@
 package customdtl;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,6 +10,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.unsupervised.attribute.NumericToNominal;
 
 public class DatasetPreProcessor {
 	private Instances mainInst;
@@ -32,25 +34,27 @@ public class DatasetPreProcessor {
             return ins;
         }
         
-//	public static void main(String[] args) {
-//		try {
-//			DatasetPreProcessor dsp = new DatasetPreProcessor("mushrooms.csv");
-//			System.out.println(dsp.mainInst);
-//			System.out.println(DTLUtil.calculateGainRatio(dsp.mainInst, dsp.mainInst.attribute(1)));
-//			System.out.println(DTLUtil.calculateGainRatio(dsp.mainInst, dsp.mainInst.attribute(2)));
-//			System.out.println(DTLUtil.calculateGainRatio(dsp.mainInst, dsp.mainInst.attribute(3)));
-//
-//			dsp.calcThresholdIfNominal();
-//            System.out.println(dsp.mainInst);
-//            System.out.println(dsp.changeAttrValue());
-//			for (double t : dsp.getThreshold()) {
-//				System.out.println(t);
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
-	
+	public static void main(String[] args) {
+		try {
+			DatasetPreProcessor dsp = new DatasetPreProcessor("coba.arff");
+			System.out.println(dsp.mainInst);
+                        
+			for (double t : dsp.getThreshold()) {
+				System.out.println(t);
+			}
+                        
+//                        dsp.makeNominal("coba.arff");
+                        
+                        
+                        
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+	}
+        
+        
 	public DatasetPreProcessor(String filename) throws Exception {
 		randomizer = new Random();
 		setDataset("files/"+filename);
@@ -127,18 +131,12 @@ public class DatasetPreProcessor {
 				prevValue = classArray[i];
 			}
 		}	
-		System.out.println("atribut");
-		for (int i=0; i<numInstances; i++) {
-			System.out.print(i+">"+valueArray[i]+" ");	
-		}
-		
-		System.out.println("");
-		System.out.println("class");
-		for (int i=0; i<numInstances; i++) {
-			System.out.print(i+">"+classArray[i]+" ");	
-		}
-		System.out.println("");
-		System.out.println(cutPointList);
+
+//		for (int i=0; i<numInstances; i++) {
+//			System.out.print(i+">"+classArray[i]+" ");	
+//		}
+//		System.out.println("");
+//		System.out.println(cutPointList);
 
 		int chosenCutPoint = 0;
 		double maxIG = 0d;
@@ -153,7 +151,7 @@ public class DatasetPreProcessor {
 			cutPointList.remove(index); // memastikan angka random tidak berulang
 			counter++;
 		}
-		System.out.println(chosenCutPoint);
+//		System.out.println(chosenCutPoint);
 		threshold[attIdx] = (valueArray[chosenCutPoint]+valueArray[chosenCutPoint+1])/2; 
 	}
 	
@@ -167,6 +165,50 @@ public class DatasetPreProcessor {
 		}
 		return ig;
 	}
+        
+        public void makeNominal(String filename) throws Exception {
+            this.calcThresholdIfNominal();
+            File file = new File("files/"+filename);
+
+            // creates the file
+            file.createNewFile();
+
+            // creates a FileWriter Object
+            FileWriter writer = new FileWriter(file);
+            // Writes the content to the file
+            writer.write("@relation " + mainInst.relationName() + "\n");
+            writer.write("\n");
+            for (int i = 0; i < mainInst.numAttributes(); i++) {
+                if (mainInst.attribute(i).isNumeric()) {
+                    writer.write("@attribute " + mainInst.attribute(i).name() + " {a,b}\n");
+                } else {
+                    writer.write(mainInst.attribute(i) + "\n");
+                }
+            }
+            writer.write("\n");
+            writer.write("@data\n");
+            for (Instance singleIns : mainInst) {
+                for (int i = 0; i < singleIns.numAttributes(); i++) {
+                    // kalo numeric, ubah ke nominal
+                    if (threshold[i] == 0.0) {
+                        writer.write(singleIns.toString(i));
+                    } else {
+                        // bikin threshold
+                        if (singleIns.value(i) < threshold[i]) {
+                            writer.write("a");
+                        } else {
+                            writer.write("b");
+                        }
+                    }
+                    if (i != singleIns.numAttributes() - 1) {
+                        writer.write(",");
+                    }
+                }
+                writer.write("\n");
+            }
+            writer.flush();
+            writer.close();
+    }
 }
 
 
