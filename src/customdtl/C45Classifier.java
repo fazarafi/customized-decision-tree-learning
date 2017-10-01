@@ -74,7 +74,7 @@ public class C45Classifier extends ID3Classifier{
                     for(int i=0;i<currentIdx;i++){
                         Logic ll = al.get(i);
                         Logic newl = new Logic(ll.value,ll.attribute);
-                        r.addLogic(ll);
+                        r.addLogic(newl);
                     }
                     r.getValueClass();
                     rules.add(r);

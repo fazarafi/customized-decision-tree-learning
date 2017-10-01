@@ -1,6 +1,7 @@
 package customdtl;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,6 +10,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.unsupervised.attribute.NumericToNominal;
 
 public class DatasetPreProcessor {
 	private Instances mainInst;
@@ -37,10 +39,50 @@ public class DatasetPreProcessor {
 			DatasetPreProcessor dsp = new DatasetPreProcessor("weather.numeric.arff");
 			dsp.calcThresholdIfNominal();
                         System.out.println(dsp.mainInst);
-                        System.out.println(dsp.changeAttrValue());
+                        
 			for (double t : dsp.getThreshold()) {
 				System.out.println(t);
 			}
+                        
+                        File file = new File("baru.arff");
+
+                        // creates the file
+                        file.createNewFile();
+
+                        // creates a FileWriter Object
+                        FileWriter writer = new FileWriter(file);
+                        // Writes the content to the file
+                        writer.write("@relation "+dsp.mainInst.relationName()+"\n");
+                        writer.write("\n");
+                        for (int i=0;i<dsp.mainInst.numAttributes();i++) {
+                            if (dsp.mainInst.attribute(i).isNumeric())
+                                writer.write("@attribute "+dsp.mainInst.attribute(i).name()+" {a,b}\n");
+                            else                
+                                writer.write(dsp.mainInst.attribute(i)+"\n");
+                        }
+                        writer.write("\n");
+                        writer.write("@data\n");
+                        for (Instance singleIns : dsp.mainInst) {
+                            for (int i=0;i<singleIns.numAttributes();i++) {
+                                // kalo numeric, ubah ke nominal
+                                if (dsp.threshold[i] == 0.0)
+                                    writer.write(singleIns.toString(i));
+                                else {
+                                    // bikin threshold
+                                    if (singleIns.value(i)<dsp.threshold[i])
+                                        writer.write("a");
+                                    else
+                                        writer.write("b");
+                                }
+                                if (i != singleIns.numAttributes()-1)
+                                    writer.write(",");
+                            }
+                            writer.write("\n");
+                        }
+                        writer.flush();
+                        writer.close();
+                        
+                        
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -124,18 +166,12 @@ public class DatasetPreProcessor {
 				prevValue = classArray[i];
 			}
 		}	
-		System.out.println("atribut");
-		for (int i=0; i<numInstances; i++) {
-			System.out.print(i+">"+valueArray[i]+" ");	
-		}
-		
-		System.out.println("");
-		System.out.println("class");
-		for (int i=0; i<numInstances; i++) {
-			System.out.print(i+">"+classArray[i]+" ");	
-		}
-		System.out.println("");
-		System.out.println(cutPointList);
+
+//		for (int i=0; i<numInstances; i++) {
+//			System.out.print(i+">"+classArray[i]+" ");	
+//		}
+//		System.out.println("");
+//		System.out.println(cutPointList);
 
 		int chosenCutPoint = 0;
 		double maxIG = 0d;
@@ -150,7 +186,7 @@ public class DatasetPreProcessor {
 			cutPointList.remove(index); // memastikan angka random tidak berulang
 			counter++;
 		}
-		System.out.println(chosenCutPoint);
+//		System.out.println(chosenCutPoint);
 		threshold[attIdx] = (valueArray[chosenCutPoint]+valueArray[chosenCutPoint+1])/2; 
 	}
 	
