@@ -12,8 +12,13 @@ public class C45Classifier extends ID3Classifier{
     public static DatasetPreProcessor dPP;
     public double accuracy; //dapet dari model tree yang udah di training
 //        public double threshold;
-    public ArrayList<Rule> rules;
-        
+    public ArrayList<Rule> rules = new ArrayList<>();
+    
+    public void printAllRules(){
+        for(int i=0;i<rules.size();i++){
+            rules.get(i).printRule();
+        }
+    }
     @Override
     public DTLNode buildTree(Instances ins, DTLNode newParent) {
         try {
@@ -54,6 +59,7 @@ public class C45Classifier extends ID3Classifier{
 
             return node;
         } catch (Exception e) {
+            e.getStackTrace()[0].getLineNumber();
             System.out.println(e);
         }
         return null;
@@ -64,15 +70,18 @@ public class C45Classifier extends ID3Classifier{
         return (double) getClassIndexC45(ins, rules);
     }
         
-	@Override
-	public void buildClassifier(Instances ins) throws Exception {
-    //      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            // create tree (root)
-            dPP = new DatasetPreProcessor(ins);
-            allIns = ins;
-            tree = this.buildTree(ins, null);
-            rulePostPrunning(tree,allIns);
-        }
+    @Override
+    public void buildClassifier(Instances ins) throws Exception {
+//      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // create tree (root)
+        dPP = new DatasetPreProcessor(ins);
+        allIns = ins;
+        tree = this.buildTree(ins, null);
+//        System.out.println("aman build");
+        rulePostPrunning(tree,allIns);
+        printAllRules();
+        System.out.println("build classifier selesai");
+    }
         
         public void swap(int i, int j) {
             Rule temp1 = new Rule(rules.get(i));
@@ -103,13 +112,15 @@ public class C45Classifier extends ID3Classifier{
         }
         
         public void rulePostPrunning(DTLNode node,Instances ins) throws Exception {
-            ArrayList<Logic> al = new ArrayList<Logic>();
+            ArrayList<Logic> al = new ArrayList<>();
             int idx = 0;
             convertToRule(node,al,idx);
-            for(int i=0;i<al.size();i++){
+            System.out.println("convert ke rule");
+            printAllRules();
+            for(int i=0;i<rules.size();i++){
                 rules.get(i).prunning(accuracy,ins);
             }
-            qSortRules(0,0);
+            qSortRules(0,rules.size()-1);
         }
         
         public void convertToRule(DTLNode node,ArrayList<Logic> al,int currentIdx) throws Exception{ 
@@ -132,20 +143,27 @@ public class C45Classifier extends ID3Classifier{
                     currentIdx++;
                     for(int i=0;i<node.children.size();i++){
                         Logic l = new Logic(node.attributeValues.get(i),node.attributeToCheck);
-                        al.add(currentIdx,l);
+//                        System.out.println(l);
+                        if(currentIdx >= al.size()){
+                            al.add(l);
+                        }else al.add(currentIdx,l);
+                        
                         convertToRule(node.children.get(i),al,currentIdx);
                     }
                 }
             }catch (Exception e) {
                 System.out.println(e);
+                System.out.println("exception di convert to rule");
             }
         }
                 
 	public static int getClassIndexC45(Instance ins,ArrayList<Rule> rulesAfterPrunning) {
+            System.out.println("masuk classify");
             boolean isRuleMatch = false;
             int idxAns = -1;
             int ii = 0;
             while(!isRuleMatch && ii<rulesAfterPrunning.size()){
+                System.out.println("loop ke " + ii);
                 ArrayList<Logic> logics = rulesAfterPrunning.get(ii).getRule();
                 boolean isAtrValid = true;
                 for(int i=0;i<logics.size();i++){

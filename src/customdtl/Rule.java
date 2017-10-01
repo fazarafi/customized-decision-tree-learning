@@ -5,6 +5,7 @@
  */
 package customdtl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import weka.core.Attribute;
 import weka.core.Instance;
@@ -14,9 +15,9 @@ import weka.core.Instances;
  *
  * @author adesu
  */
-public class Rule{
+public class Rule implements Serializable{
     private double akurasi;
-    private ArrayList<Logic> logics;
+    private ArrayList<Logic> logics = new ArrayList<>();
     private String valueClass;
     private int idxClass;
     
@@ -79,7 +80,7 @@ public class Rule{
             }
         }
 //            System.out.println(i + ". " + ins.attribute(i).name());
-        akurasi = valid/valid+invalid;
+        akurasi = (double)valid/(double)(valid+invalid);
     }
     
     public void addLogic(Logic l){
