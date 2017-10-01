@@ -36,14 +36,14 @@ public class DatasetPreProcessor {
         
 	public static void main(String[] args) {
 		try {
-			DatasetPreProcessor dsp = new DatasetPreProcessor("weather.numeric.arff");
-			dsp.calcThresholdIfNominal();
-                        System.out.println(dsp.mainInst);
+			DatasetPreProcessor dsp = new DatasetPreProcessor("coba.arff");
+			System.out.println(dsp.mainInst);
                         
 			for (double t : dsp.getThreshold()) {
 				System.out.println(t);
 			}
                         
+//                        dsp.makeNominal("coba.arff");
                         
                         
                         
@@ -167,7 +167,8 @@ public class DatasetPreProcessor {
 	}
         
         public void makeNominal(String filename) throws Exception {
-            File file = new File(filename);
+            this.calcThresholdIfNominal();
+            File file = new File("files/"+filename);
 
             // creates the file
             file.createNewFile();
